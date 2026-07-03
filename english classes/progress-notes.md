@@ -12,17 +12,19 @@ Boa fluência e compreensão auditiva, sustenta conversas longas sobre temas com
 - Bom vocabulário geral para falar de viagens, trabalho e notícias globais.
 - Boa compreensão de regras gramaticais quando explicadas (ex: Simple Past vs Past Progressive).
 
-## Pontos de atenção (recorrentes - aparecem tanto nas aulas quanto em mensagens reais do dia a dia)
+## Pontos de atenção (recorrentes - confirmados em aulas, mensagens reais E no registro do Notion)
 
 1. **Present Perfect (have/has + particípio passado)**
    - Erro nas aulas: "Did you ever seen...?" → correto: "Have you ever seen...?"
    - Erro em mensagem real (trabalho): "didn't faced" → correto: "didn't face"
+   - Confirmado na Aula 02 (Notion): dedicou prática específica à introdução do Present Perfect e Present Perfect Progressive, ligando ação passada a resultado presente.
    - Regra fixa: o auxiliar (did/have/has) carrega o tempo verbal; o verbo principal fica na forma "crua" (base após did, particípio após have/has).
 
-2. **Concordância sujeito-verbo**
+2. **Concordância sujeito-verbo (principalmente com "you")**
    - Nas aulas: "you is" → correto: "you are"
    - Em mensagem real: "materials was" → correto: "materials were"
-   - Sujeito plural sempre pede verbo no plural (are/were), sem exceção.
+   - Confirmado na Aula 02 (Notion): professor corrigiu especificamente "you are" + verbo na forma base (ex: "I usually play") durante exercícios de present simple vs. present progressive.
+   - Sujeito plural sempre pede verbo no plural (are/were), sem exceção. Esse é o ponto mais reforçado pelo professor até agora - vale prioridade máxima.
 
 3. **Verbos irregulares específicos para revisar** (não seguem padrão, é decoreba)
    - know → knew
@@ -49,5 +51,20 @@ Boa fluência e compreensão auditiva, sustenta conversas longas sobre temas com
 - Simple-perfect-tenses
 - irregular-verbs-review
 
+## Registro de aulas (Notion — página "Inglês" em Estudos)
+
+**Aula 01 — 23/06/2026 — Getting back to the classes**
+- Retomada das aulas após pausa; revisão da viagem à Europa e noivado com Julia.
+- Notícias das Filipinas: terremoto, alerta de tsunami, deslizamento; caso de tiroteio escolar.
+- Confirmado plano de aulas semanais (quintas) com foco em gramática e precisão de frases.
+
+**Aula 02 — 02/07/2026 — Simple and perfect tenses**
+- Revisão de simple past, past progressive, simple present e present progressive (Practice 19 e 20).
+- Correção pontual de concordância: "you are" + verbo na forma base (ex: "I usually play").
+- Introdução ao Present Perfect e Present Perfect Progressive, ligando ação passada a resultado presente, comparando com simple past ("yesterday", "ago").
+- **Key learnings do professor:** Present perfect tense, Present perfect progressive tense, Subject–verb agreement with "you".
+
+**Aula 03 — agendada para 07/07/2026** — tema ainda não definido no Notion.
+
 ## Fonte
-Overview elaborado com base nos áudios das aulas (professor Miko), fornecido em 2026-07-03. Resumos de aula por aula também estão sendo mantidos no Notion (página de estudos de inglês).
+Overview elaborado com base nos áudios das aulas (professor Miko), fornecido em 2026-07-03, e cruzado com os resumos oficiais de aula mantidos no Notion (página "Inglês", em Estudos).

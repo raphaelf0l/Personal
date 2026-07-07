@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Painel de Gastos - Raphael</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --good:           #006300;
+    --critical:       #d03b3b;
+    --series-1: #2a78d6; /* Mercado/Supermercado - blue */
+    --series-2: #1baf7a; /* Transporte - aqua */
+    --series-3: #eda100; /* Alimentacao - yellow */
+    --series-4: #008300; /* Assinaturas - green */
+    --series-5: #4a3aa7; /* Compras Online - violet */
+    --series-6: #e34948; /* Saude/Farmacia - red */
+    --series-7: #e87ba4; /* Outros - magenta */
+    --viagem:   #eb6834; /* Viagem accent - orange, distinct from routine categories */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --good:           #0ca30c;
+      --critical:       #e66767;
+      --series-1: #3987e5;
+      --series-2: #199e70;
+      --series-3: #c98500;
+      --series-4: #008300;
+      --series-5: #9085e9;
+      --series-6: #e66767;
+      --series-7: #d55181;
+      --viagem:   #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page-plane: #0d0d0d; --text-primary:#ffffff; --text-secondary:#c3c2b7;
+    --text-muted:#898781; --gridline:#2c2c2a; --baseline:#383835; --border: rgba(255,255,255,0.10);
+    --good:#0ca30c; --critical:#e66767;
+    --series-1:#3987e5; --series-2:#199e70; --series-3:#c98500; --series-4:#008300;
+    --series-5:#9085e9; --series-6:#e66767; --series-7:#d55181; --viagem:#d95926;
+  }
+  :root[data-theme="light"] {
+    --surface-1:#fcfcfb; --page-plane:#f9f9f7; --text-primary:#0b0b0b; --text-secondary:#52514e;
+    --text-muted:#898781; --gridline:#e1e0d9; --baseline:#c3c2b7; --border: rgba(11,11,11,0.10);
+    --good:#006300; --critical:#d03b3b;
+    --series-1:#2a78d6; --series-2:#1baf7a; --series-3:#eda100; --series-4:#008300;
+    --series-5:#4a3aa7; --series-6:#e34948; --series-7:#e87ba4; --viagem:#eb6834;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .subtitle { color: var(--text-secondary); margin: 0 0 28px; font-size: 0.95rem; }
+  h2 { font-size: 1.15rem; margin: 40px 0 4px; }
+  .section-note { color: var(--text-secondary); font-size: 0.88rem; margin: 0 0 16px; max-width: 720px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .stat-tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-tile .label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 6px; }
+  .stat-tile .value { font-size: 1.55rem; font-weight: 600; font-variant-numeric: proportional-nums; }
+  .stat-tile .value.viagem { color: var(--viagem); }
+  .stat-tile .sub { color: var(--text-muted); font-size: 0.78rem; margin-top: 4px; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 20px 12px; margin-bottom: 8px;
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 14px; font-size: 0.8rem; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  svg { display: block; width: 100%; height: auto; overflow: visible; font-family: inherit; }
+  .axis-label { fill: var(--text-muted); font-size: 11px; }
+  .gridline { stroke: var(--gridline); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1; }
+  .bar { cursor: pointer; }
+  .budget-line { stroke: var(--text-muted); stroke-width: 1.5; }
+  .budget-label { fill: var(--text-muted); font-size: 11px; }
+  .delta-good { fill: var(--good); font-size: 11px; font-weight: 600; }
+  .delta-bad { fill: var(--critical); font-size: 11px; font-weight: 600; }
+  .month-label { fill: var(--text-secondary); font-size: 11px; }
+  .value-label { fill: var(--text-primary); font-size: 11px; font-weight: 600; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 50;
+    background: var(--text-primary); color: var(--surface-1);
+    font-size: 12px; padding: 6px 10px; border-radius: 6px;
+    opacity: 0; transition: opacity 0.08s ease; white-space: nowrap;
+  }
+  details.table-toggle { margin: 10px 0 24px; }
+  details.table-toggle summary {
+    cursor: pointer; color: var(--text-secondary); font-size: 0.85rem; user-select: none;
+  }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
+  table.data-table th, table.data-table td {
+    text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--gridline);
+    font-variant-numeric: tabular-nums;
+  }
+  table.data-table th:first-child, table.data-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.data-table thead th { color: var(--text-secondary); font-weight: 600; font-size: 0.75rem; }
+
+  .viagem-banner {
+    background: var(--surface-1);
+    background: color-mix(in srgb, var(--viagem) 12%, var(--surface-1));
+    border: 1px solid var(--border);
+    border: 1px solid color-mix(in srgb, var(--viagem) 35%, transparent);
+    border-radius: 12px; padding: 20px 22px; margin: 12px 0 8px;
+  }
+  .viagem-banner .value { color: var(--viagem); font-size: 2rem; font-weight: 700; }
+  .viagem-banner .label { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 4px; }
+  .viagem-banner .note { color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px; max-width: 640px; }
+
+  .notes-box {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; font-size: 0.87rem; color: var(--text-secondary);
+  }
+  .notes-box h3 { color: var(--text-primary); font-size: 0.95rem; margin: 0 0 8px; }
+  .notes-box ul { margin: 6px 0 14px; padding-left: 20px; }
+  .notes-box li { margin-bottom: 6px; }
+  .notes-box p:last-child, .notes-box ul:last-child { margin-bottom: 0; }
+  code { background: var(--gridline); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+
+  footer { color: var(--text-muted); font-size: 0.78rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Painel de Gastos Pessoais</h1>
+  <p class="subtitle">Raphael &middot; Nov/2025 &ndash; Jun/2026 &middot; Cartoes Bradesco e Nubank &middot; Salario liquido disponivel: R$ 7.400/mes</p>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <h2>Orcamento vs. Gasto "Vida Real" por mes</h2>
+  <p class="section-note">Compara o orcamento mensal disponivel (R$ 7.400) com o total gasto em rotina (exclui viagem). A barra cinza pontilhada marca o orcamento; o numero abaixo de cada mes mostra quanto sobrou (verde) ou faltou (vermelho).</p>
+  <div class="card">
+    <div id="chartBudget"></div>
+  </div>
+  <details class="table-toggle"><summary>Ver tabela de dados</summary><div id="tableBudget"></div></details>
+
+  <h2>Gasto "Vida Real" por categoria e mes</h2>
+  <p class="section-note">Categorias derivadas automaticamente a partir do nome do estabelecimento. Viagem fica de fora deste grafico (ver secao dedicada abaixo).</p>
+  <div class="card">
+    <div class="legend" id="catLegend"></div>
+    <div id="chartCategories"></div>
+  </div>
+  <details class="table-toggle"><summary>Ver tabela de dados</summary><div id="tableCategories"></div></details>
+
+  <h2>Viagem (excluida do orcamento de rotina)</h2>
+  <div class="viagem-banner">
+    <div class="label">Total gasto em viagem no periodo (Nov/2025 &ndash; Jun/2026)</div>
+    <div class="value" id="viagemTotal">-</div>
+    <div class="note">Inclui: qualquer transacao cobrada em USD/EUR (passagens, IOF de transacao no exterior) e qualquer reserva de viagem mesmo cobrada em reais (hoteis, Airbnb, Booking.com, aluguel de carro, passeios/ingressos, visto). Preply (aulas de ingles) foi reclassificado para Vida Real a pedido do usuario, mesmo sendo cobrado em EUR/USD - e uma assinatura de estudos, nao uma despesa da viagem. Esse valor NAO entra nos graficos de rotina acima nem no calculo de "sobra" mensal. Ver <code>README.md</code> para a lista completa de regras.</div>
+  </div>
+
+  <div class="notes-box">
+    <h3>Avisos importantes</h3>
+    <ul id="notesList"></ul>
+  </div>
+
+  <footer>Gerado a partir de economia/data/transactions.json &middot; <span id="txnCount"></span> transacoes normalizadas &middot; ver economia/README.md para metodologia completa.</footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {"budget":7400.0,"months":["2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"monthly":{"2025-10":{"vida_real_total":258.85,"viagem_total":0,"categories":{"Mercado/Supermercado":199.99,"Transporte":0,"Alimentacao/Restaurantes":0,"Assinaturas":0,"Compras Online":58.86,"Saude/Farmacia":0,"Outros":0},"n_vida_real":2,"n_viagem":0,"budget":7400.0,"remaining":7141.15},"2025-11":{"vida_real_total":3971.55,"viagem_total":2887.44,"categories":{"Mercado/Supermercado":1129.28,"Transporte":421.55,"Alimentacao/Restaurantes":233.15,"Assinaturas":449.67,"Compras Online":434.01,"Saude/Farmacia":0,"Outros":1303.89},"n_vida_real":47,"n_viagem":3,"budget":7400.0,"remaining":3428.45},"2025-12":{"vida_real_total":4492.92,"viagem_total":2354.47,"categories":{"Mercado/Supermercado":2891.29,"Transporte":443.46,"Alimentacao/Restaurantes":182.87,"Assinaturas":268.22,"Compras Online":0,"Saude/Farmacia":29.9,"Outros":677.18},"n_vida_real":48,"n_viagem":3,"budget":7400.0,"remaining":2907.08},"2026-01":{"vida_real_total":4453.97,"viagem_total":4989.69,"categories":{"Mercado/Supermercado":2415.85,"Transporte":387.52,"Alimentacao/Restaurantes":148.01,"Assinaturas":395.44,"Compras Online":345.75,"Saude/Farmacia":41.89,"Outros":719.51},"n_vida_real":57,"n_viagem":6,"budget":7400.0,"remaining":2946.03},"2026-02":{"vida_real_total":3591.46,"viagem_total":6703.08,"categories":{"Mercado/Supermercado":1208.64,"Transporte":244.88,"Alimentacao/Restaurantes":222.0,"Assinaturas":268.16,"Compras Online":374.64,"Saude/Farmacia":9.9,"Outros":1263.24},"n_vida_real":34,"n_viagem":10,"budget":7400.0,"remaining":3808.54},"2026-03":{"vida_real_total":1294.88,"viagem_total":122.76,"categories":{"Mercado/Supermercado":1026.82,"Transporte":103.16,"Alimentacao/Restaurantes":0,"Assinaturas":68.11,"Compras Online":9.99,"Saude/Farmacia":36.8,"Outros":50.0},"n_vida_real":17,"n_viagem":1,"budget":7400.0,"remaining":6105.12},"2026-04":{"vida_real_total":3760.12,"viagem_total":6581.82,"categories":{"Mercado/Supermercado":2513.39,"Transporte":43.95,"Alimentacao/Restaurantes":112.3,"Assinaturas":400.96,"Compras Online":209.74,"Saude/Farmacia":3.12,"Outros":476.66},"n_vida_real":36,"n_viagem":14,"budget":7400.0,"remaining":3639.88},"2026-05":{"vida_real_total":4984.92,"viagem_total":216.75,"categories":{"Mercado/Supermercado":1922.5,"Transporte":617.45,"Alimentacao/Restaurantes":152.86,"Assinaturas":550.28,"Compras Online":1081.66,"Saude/Farmacia":0,"Outros":660.17},"n_vida_real":39,"n_viagem":1,"budget":7400.0,"remaining":2415.08},"2026-06":{"vida_real_total":3160.94,"viagem_total":0,"categories":{"Mercado/Supermercado":1335.6,"Transporte":440.51,"Alimentacao/Restaurantes":11.99,"Assinaturas":890.76,"Compras Online":213.88,"Saude/Farmacia":0,"Outros":268.2},"n_vida_real":32,"n_viagem":0,"budget":7400.0,"remaining":4239.06}},"total_viagem":23856.01,"total_vida_real":29969.61,"categories":["Mercado/Supermercado","Transporte","Alimentacao/Restaurantes","Assinaturas","Compras Online","Saude/Farmacia","Outros"],"n_transactions":350,"edge_case_count":1,"edge_case_total":117.62};
+
+const MONTH_LABELS = {
+  "2025-10":"out/25 (parcial)","2025-11":"nov/25","2025-12":"dez/25","2026-01":"jan/26","2026-02":"fev/26",
+  "2026-03":"mar/26*","2026-04":"abr/26","2026-05":"mai/26","2026-06":"jun/26"
+};
+const CAT_COLORS = {
+  "Mercado/Supermercado":"var(--series-1)","Transporte":"var(--series-2)","Alimentacao/Restaurantes":"var(--series-3)",
+  "Assinaturas":"var(--series-4)","Compras Online":"var(--series-5)","Saude/Farmacia":"var(--series-6)","Outros":"var(--series-7)"
+};
+const CAT_LABELS_PT = {
+  "Mercado/Supermercado":"Mercado/Supermercado","Transporte":"Transporte","Alimentacao/Restaurantes":"Alimentacao/Restaurantes",
+  "Assinaturas":"Assinaturas","Compras Online":"Compras online","Saude/Farmacia":"Saude/Farmacia","Outros":"Outros"
+};
+
+function fmtBRL(v) {
+  return "R$ " + v.toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtBRLShort(v) {
+  return "R$ " + Math.round(v).toLocaleString("pt-BR");
+}
+
+const tooltip = document.getElementById("tooltip");
+function showTip(evt, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.opacity = 1;
+  tooltip.style.left = (evt.clientX + 14) + "px";
+  tooltip.style.top = (evt.clientY + 14) + "px";
+}
+function hideTip() { tooltip.style.opacity = 0; }
+
+// ---------- Stat tiles ----------
+(function buildStats() {
+  const months = DATA.months;
+  const fullMonths = months.filter(m => m !== "2025-10"); // exclude partial month from averages
+  const avgVidaReal = fullMonths.reduce((s,m) => s + DATA.monthly[m].vida_real_total, 0) / fullMonths.length;
+  const avgRemaining = DATA.budget - avgVidaReal;
+  const totalRemaining = fullMonths.reduce((s,m) => s + DATA.monthly[m].remaining, 0);
+  const tiles = [
+    {label:"Orcamento mensal", value: fmtBRL(DATA.budget), sub:"salario liquido disponivel"},
+    {label:"Gasto medio Vida Real/mes", value: fmtBRL(avgVidaReal), sub:`media de ${fullMonths.length} meses completos`},
+    {label:"Sobra media/mes", value: fmtBRL(avgRemaining), sub: avgRemaining >= 0 ? "dentro do orcamento" : "acima do orcamento"},
+    {label:"Total Vida Real (periodo)", value: fmtBRL(DATA.total_vida_real), sub:`${DATA.months.length} meses (1 parcial)`},
+    {label:"Total Viagem (periodo)", value: fmtBRL(DATA.total_viagem), sub:"excluido do orcamento de rotina", viagem:true},
+  ];
+  const row = document.getElementById("statRow");
+  tiles.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "stat-tile";
+    div.innerHTML = `<div class="label">${t.label}</div><div class="value${t.viagem?' viagem':''}">${t.value}</div><div class="sub">${t.sub}</div>`;
+    row.appendChild(div);
+  });
+  document.getElementById("viagemTotal").textContent = fmtBRL(DATA.total_viagem);
+  document.getElementById("txnCount").textContent = DATA.n_transactions;
+})();
+
+// ---------- Chart 1: Budget vs Vida Real spend ----------
+(function buildBudgetChart() {
+  const months = DATA.months;
+  const W = 1000, H = 340, padL = 50, padR = 20, padT = 20, padB = 56;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const maxVal = Math.max(DATA.budget, ...months.map(m => DATA.monthly[m].vida_real_total)) * 1.08;
+  const n = months.length;
+  const slotW = plotW / n;
+  const barW = Math.min(28, slotW * 0.5);
+
+  function y(v) { return padT + plotH - (v / maxVal) * plotH; }
+
+  let gridSVG = "";
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (maxVal / ticks) * i;
+    const yy = y(v);
+    gridSVG += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}"/>`;
+    gridSVG += `<text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmtBRLShort(v)}</text>`;
+  }
+
+  const budgetY = y(DATA.budget);
+  let barsSVG = "";
+  months.forEach((m, i) => {
+    const d = DATA.monthly[m];
+    const cx = padL + slotW * i + slotW/2;
+    const barX = cx - barW/2;
+    const barTop = y(d.vida_real_total);
+    const barH = Math.max(0, y(0) - barTop);
+    const over = d.vida_real_total > DATA.budget;
+    const deltaClass = d.remaining >= 0 ? "delta-good" : "delta-bad";
+    const deltaText = d.remaining >= 0 ? `+${fmtBRLShort(d.remaining)}` : `-${fmtBRLShort(Math.abs(d.remaining))}`;
+    barsSVG += `<g class="bar" data-month="${m}"
+        onmousemove="showTip(event, '<b>${MONTH_LABELS[m]}</b><br>Vida real: ${fmtBRL(d.vida_real_total)}<br>Orcamento: ${fmtBRL(DATA.budget)}<br>Sobra: ${fmtBRL(d.remaining)}<br>${d.n_vida_real} transacoes')"
+        onmouseleave="hideTip()">
+      <rect x="${barX}" y="${barTop}" width="${barW}" height="${barH}" rx="4" fill="${over ? 'var(--critical)' : 'var(--series-1)'}"/>
+      <text class="month-label" x="${cx}" y="${H-padB+18}" text-anchor="middle">${MONTH_LABELS[m]}</text>
+      <text class="${deltaClass}" x="${cx}" y="${H-padB+34}" text-anchor="middle">${deltaText}</text>
+    </g>`;
+  });
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Orcamento versus gasto vida real por mes">
+    ${gridSVG}
+    <line class="budget-line" stroke-dasharray="4 3" x1="${padL}" x2="${W-padR}" y1="${budgetY}" y2="${budgetY}"/>
+    <text class="budget-label" x="${W-padR}" y="${budgetY-6}" text-anchor="end">Orcamento: ${fmtBRLShort(DATA.budget)}/mes</text>
+    <line class="baseline" x1="${padL}" x2="${W-padR}" y1="${y(0)}" y2="${y(0)}"/>
+    ${barsSVG}
+  </svg>`;
+  document.getElementById("chartBudget").innerHTML = svg;
+
+  // table
+  let rows = months.map(m => {
+    const d = DATA.monthly[m];
+    return `<tr><td>${MONTH_LABELS[m]}</td><td>${fmtBRL(DATA.budget)}</td><td>${fmtBRL(d.vida_real_total)}</td><td>${fmtBRL(d.remaining)}</td><td>${d.n_vida_real}</td></tr>`;
+  }).join("");
+  document.getElementById("tableBudget").innerHTML = `<table class="data-table">
+    <thead><tr><th>Mes</th><th>Orcamento</th><th>Gasto vida real</th><th>Sobra</th><th>Transacoes</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+})();
+
+// ---------- Chart 2: Category stacked bar ----------
+(function buildCategoryChart() {
+  const months = DATA.months;
+  const cats = DATA.categories;
+  const W = 1000, H = 360, padL = 50, padR = 20, padT = 20, padB = 40;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const maxVal = Math.max(...months.map(m =>
+    cats.reduce((s,c) => s + DATA.monthly[m].categories[c], 0)
+  )) * 1.1;
+  const n = months.length;
+  const slotW = plotW / n;
+  const barW = Math.min(34, slotW * 0.6);
+  const gap = 2;
+
+  function y(v) { return padT + plotH - (v / maxVal) * plotH; }
+
+  let gridSVG = "";
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (maxVal / ticks) * i;
+    const yy = y(v);
+    gridSVG += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}"/>`;
+    gridSVG += `<text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmtBRLShort(v)}</text>`;
+  }
+
+  let barsSVG = "";
+  months.forEach((m, i) => {
+    const d = DATA.monthly[m];
+    const cx = padL + slotW * i + slotW/2;
+    const barX = cx - barW/2;
+    let cumBottom = y(0);
+    let segs = "";
+    cats.forEach(c => {
+      const val = d.categories[c];
+      if (val <= 0) return;
+      const segTop = cumBottom - (val / maxVal) * plotH;
+      const segH = Math.max(0, cumBottom - segTop - gap);
+      segs += `<rect x="${barX}" y="${segTop}" width="${barW}" height="${segH}" rx="2" fill="${CAT_COLORS[c]}"
+        onmousemove="showTip(event, '<b>${MONTH_LABELS[m]}</b><br>${CAT_LABELS_PT[c]}: ${fmtBRL(val)}')"
+        onmouseleave="hideTip()"/>`;
+      cumBottom = segTop;
+    });
+    barsSVG += `<g>${segs}<text class="month-label" x="${cx}" y="${H-padB+18}" text-anchor="middle">${MONTH_LABELS[m]}</text></g>`;
+  });
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto vida real por categoria e mes">
+    ${gridSVG}
+    <line class="baseline" x1="${padL}" x2="${W-padR}" y1="${y(0)}" y2="${y(0)}"/>
+    ${barsSVG}
+  </svg>`;
+  document.getElementById("chartCategories").innerHTML = svg;
+
+  // legend
+  const legend = document.getElementById("catLegend");
+  legend.innerHTML = cats.map(c =>
+    `<span class="legend-item"><span class="swatch" style="background:${CAT_COLORS[c]}"></span>${CAT_LABELS_PT[c]}</span>`
+  ).join("");
+
+  // table
+  let head = `<tr><th>Mes</th>${cats.map(c=>`<th>${CAT_LABELS_PT[c]}</th>`).join("")}<th>Total</th></tr>`;
+  let rows = months.map(m => {
+    const d = DATA.monthly[m];
+    const total = cats.reduce((s,c) => s + d.categories[c], 0);
+    return `<tr><td>${MONTH_LABELS[m]}</td>${cats.map(c=>`<td>${fmtBRL(d.categories[c])}</td>`).join("")}<td><b>${fmtBRL(total)}</b></td></tr>`;
+  }).join("");
+  document.getElementById("tableCategories").innerHTML = `<table class="data-table"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+})();
+
+// ---------- Notes ----------
+(function buildNotes() {
+  const notes = [
+    "<b>Marco/2026 (Bradesco) ausente:</b> o PDF da fatura com vencimento ~08/04/2026 esta corrompido (3 bytes) e nao pode ser lido. Gastos Bradesco de marco/2026 nao estao neste painel (Nubank de marco esta completo). Ver README para detalhes do impacto estimado.",
+    `<b>Preply (aulas de ingles, ~R$130-225/mes, cobrada em EUR/USD de Berlim):</b> reclassificado para Vida Real / Assinaturas a pedido do usuario - e uma assinatura de estudos, nao uma despesa da viagem, mesmo sendo cobrada em moeda estrangeira.`,
+    `<b>Wl*Steam Purchase</b> (jogo digital, cobrado em moeda estrangeira): ${DATA.edge_case_count} lancamento somando ${fmtBRL(DATA.edge_case_total)} permanece marcado como Viagem seguindo a regra literal (EUR/USD = viagem) - ver README e considere mover para "Vida Real" se preferir, como foi feito com o Preply.`,
+    "<b>out/2025 e um mes parcial</b> (apenas 2 compras Amazon do cartao adicional Bradesco, cauda da fatura de novembro) - excluido das medias de \"gasto medio/mes\" no topo do painel.",
+    "<b>Reconciliacao:</b> a soma dos lancamentos individuais bate exatamente com o total \"Compras/Debitos\" de 5 das 7 faturas Bradesco legiveis. Duas faturas (abr/2026 e jun/2026) tem uma pequena diferenca (R$10,50 e R$78,90) explicada por creditos aplicados diretamente no saldo sem uma linha de estorno correspondente no extrato - ver README."
+  ];
+  document.getElementById("notesList").innerHTML = notes.map(n => `<li>${n}</li>`).join("");
+})();
+</script>
+</body>
+</html>

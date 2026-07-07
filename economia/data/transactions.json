@@ -151,9 +151,9 @@
     "amount_brl": 142.13,
     "original_currency": "USD",
     "original_amount": 25.2,
-    "bucket": "viagem",
-    "note": "EUR/USD-billed subscription edge case - see README",
-    "category": null
+    "bucket": "vida_real",
+    "note": "Reclassified to vida_real per user: Preply = English lessons, not trip spend",
+    "category": "Assinaturas"
   },
   {
     "date": "2025-11-08",
@@ -1919,9 +1919,9 @@
     "amount_brl": 127.28,
     "original_currency": "USD",
     "original_amount": 23.1,
-    "bucket": "viagem",
-    "note": "EUR/USD-billed subscription edge case - see README",
-    "category": null
+    "bucket": "vida_real",
+    "note": "Reclassified to vida_real per user: Preply = English lessons, not trip spend",
+    "category": "Assinaturas"
   },
   {
     "date": "2026-02-01",
@@ -2764,9 +2764,9 @@
     "amount_brl": 132.8,
     "original_currency": "USD",
     "original_amount": 25.2,
-    "bucket": "viagem",
-    "note": "EUR/USD-billed subscription edge case - see README",
-    "category": null
+    "bucket": "vida_real",
+    "note": "Reclassified to vida_real per user: Preply = English lessons, not trip spend",
+    "category": "Assinaturas"
   },
   {
     "date": "2026-04-17",
@@ -4337,9 +4337,9 @@
     "amount_brl": 220.19,
     "original_currency": "BRL",
     "original_amount": null,
-    "bucket": "viagem",
-    "note": "EUR/USD-billed subscription edge case - see README",
-    "category": null
+    "bucket": "vida_real",
+    "note": "Reclassified to vida_real per user: Preply = English lessons, not trip spend",
+    "category": "Assinaturas"
   },
   {
     "date": "2026-05-14",
@@ -4519,9 +4519,9 @@
     "amount_brl": 223.77,
     "original_currency": "BRL",
     "original_amount": null,
-    "bucket": "viagem",
-    "note": "EUR/USD-billed subscription edge case - see README",
-    "category": null
+    "bucket": "vida_real",
+    "note": "Reclassified to vida_real per user: Preply = English lessons, not trip spend",
+    "category": "Assinaturas"
   },
   {
     "date": "2026-06-01",

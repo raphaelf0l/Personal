@@ -74,33 +74,33 @@ Seguindo a instrucao literal do usuario — simples e sem julgar caso a caso:
    ajustes a credito (`Ajuste a credito`) e reversoes de IOF
    (`IOF de volta de ...`).
 
-### Caso especial sinalizado: Preply
+### Excecao confirmada: Preply → Vida Real
 
-**Preply** (aulas de idioma, cobrado em EUR de Berlim, ~R$ 130–225/mes,
-aparece em ambos os cartoes) e uma **assinatura recorrente**, nao uma despesa
-da viagem em si — mas como e cobrado em EUR, a regra literal do usuario
-("qualquer transacao em EUR/USD = viagem") o classifica como **Viagem**.
-Isso esta sinalizado explicitamente no painel (`dashboard.html`, secao
-"Avisos importantes") e aqui no README. **6 lancamentos, R$ 963,79 no total**,
-foram marcados com a nota `"edge case"` em `transactions.json`:
+**Preply** (aulas de ingles, cobrado em EUR de Berlim, ~R$ 130–225/mes,
+aparece em ambos os cartoes) foi inicialmente classificado como Viagem pela
+regra literal ("qualquer transacao em EUR/USD = viagem"), pois e cobrado em
+moeda estrangeira. **Raphael confirmou que e estudo/vida real, nao viagem** —
+os 5 lancamentos abaixo foram reclassificados de `"viagem"` para
+`"vida_real"` (categoria `"Assinaturas"`) em `data/transactions.json`, e o
+`dashboard.html` foi regenerado com os novos totais:
 
 | Data | Descricao | Valor | Origem |
 |---|---|---:|---|
 | 2025-11-07 | Preply | R$ 142,13 | Bradesco |
 | 2026-01-30 | Preply | R$ 127,28 | Bradesco |
 | 2026-04-16 | Preply | R$ 132,80 | Bradesco |
-| 2026-04-04 | Wl \*Steam Purchase | R$ 117,62 | Nubank |
 | 2026-05-15 | Preply | R$ 220,19 | Nubank |
 | 2026-06-11 | Preply | R$ 223,77 | Nubank |
 
-`Wl *Steam Purchase` (Nubank, compra na Steam) tambem foi cobrado em moeda
-estrangeira (IOF de transacao no exterior confirmado no extrato) — incluido
-aqui pela mesma razao, embora tambem nao pareca ligado a viagem. **Se Raphael
-preferir tratar Preply e/ou a compra da Steam como gasto de rotina**, basta
-mudar o campo `bucket` dessas 6 linhas em `data/transactions.json` de
-`"viagem"` para `"vida_real"` e recarregar o `dashboard.html` (os dados estao
-embutidos no HTML — seria necessario reexecutar a agregacao ou editar o JSON
-embutido no `<script>`).
+Total reclassificado: **R$ 846,17** (movido de Viagem para Vida Real).
+
+`Wl *Steam Purchase` (Nubank, 04/04/2026, R$ 117,62) tambem foi cobrado em
+moeda estrangeira e permanece marcado como Viagem pela regra literal — nao
+foi mencionado pelo usuario como excecao. Se Raphael quiser tambem mover essa
+compra (jogo digital, nao parece ligada a viagem), basta mudar o campo
+`bucket` dessa linha em `data/transactions.json` de `"viagem"` para
+`"vida_real"` e reexecutar a agregacao usada para gerar o `DATA` embutido no
+`<script>` de `dashboard.html`.
 
 ## Netting de estornos e ajustes (Nubank)
 
@@ -206,15 +206,18 @@ para RAPHAEL FRANKLIN..."). Dois pontos especificos que valem registrar:
 | Mes | Vida Real | Viagem | Sobra vs. R$ 7.400 |
 |---|---:|---:|---:|
 | out/2025 (parcial)* | R$ 258,85 | R$ 0,00 | — |
-| nov/2025 | R$ 3.829,42 | R$ 3.029,57 | +R$ 3.570,58 |
+| nov/2025 | R$ 3.971,55 | R$ 2.887,44 | +R$ 3.428,45 |
 | dez/2025 | R$ 4.492,92 | R$ 2.354,47 | +R$ 2.907,08 |
-| jan/2026 | R$ 4.326,69 | R$ 5.116,97 | +R$ 3.073,31 |
+| jan/2026 | R$ 4.453,97 | R$ 4.989,69 | +R$ 2.946,03 |
 | fev/2026 | R$ 3.591,46 | R$ 6.703,08 | +R$ 3.808,54 |
 | mar/2026** | R$ 1.294,88 | R$ 122,76 | +R$ 6.105,12 |
-| abr/2026 | R$ 3.627,32 | R$ 6.714,62 | +R$ 3.772,68 |
-| mai/2026 | R$ 4.764,73 | R$ 436,94 | +R$ 2.635,27 |
-| jun/2026 | R$ 2.937,17 | R$ 223,77 | +R$ 4.462,83 |
-| **Total** | **R$ 29.123,44** | **R$ 24.702,18** | — |
+| abr/2026 | R$ 3.760,12 | R$ 6.581,82 | +R$ 3.639,88 |
+| mai/2026 | R$ 4.984,92 | R$ 216,75 | +R$ 2.415,08 |
+| jun/2026 | R$ 3.160,94 | R$ 0,00 | +R$ 4.239,06 |
+| **Total** | **R$ 29.969,61** | **R$ 23.856,01** | — |
+
+*(Atualizado apos reclassificar Preply de Viagem para Vida Real — ver secao
+"Excecao confirmada: Preply → Vida Real" acima.)*
 
 \* out/2025 so tem 2 compras Amazon do cartao adicional (cauda da fatura de
 nov/2025) — excluido das medias no painel.

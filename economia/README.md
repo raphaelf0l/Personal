@@ -18,6 +18,11 @@ da viagem dos sonhos completamente separados.
   ("1426" / "3134"), que ja vinham parcialmente mascarados no PDF original.
 - `dashboard.html` — painel visual auto-contido (HTML/CSS/JS puro, sem CDN,
   dados embutidos diretamente no arquivo). Abra direto no navegador.
+- `data/build_dashboard_data.py` — script que le `transactions.json`, agrega
+  por mes/categoria, acrescenta o gasto fixo de Moradia/Financiamento e
+  imprime o JSON (incluindo a lista de lancamentos por categoria usada no
+  drill-down) que deve ser colado no `const DATA = ...` de `dashboard.html`
+  sempre que os dados forem atualizados. Uso: `py data/build_dashboard_data.py`.
 - `README.md` — este arquivo.
 
 ## Fontes de dados
@@ -159,7 +164,10 @@ estabelecimento (ver funcao `categorize()` usada na geracao dos dados):
 Compras Online, Saude/Farmacia, Outros**. "Outros" inclui itens que nao se
 encaixam claramente nas demais (oficina mecanica, pet shop, barbearia,
 ingressos de evento local, pagamentos a pessoas fisicas, etc.) — vale revisar
-essa categoria periodicamente se quiser refinar a classificacao.
+essa categoria periodicamente se quiser refinar a classificacao. Ha ainda uma
+oitava categoria, **Moradia/Financiamento**, que nao vem de transacao de
+cartao — e o gasto fixo mensal descrito na secao "Gasto fixo:
+Moradia/Financiamento" abaixo.
 
 ## Reconciliacao com o "Resumo da fatura" (Bradesco)
 
@@ -205,19 +213,50 @@ para RAPHAEL FRANKLIN..."). Dois pontos especificos que valem registrar:
 
 | Mes | Vida Real | Viagem | Sobra vs. R$ 7.400 |
 |---|---:|---:|---:|
-| out/2025 (parcial)* | R$ 258,85 | R$ 0,00 | — |
-| nov/2025 | R$ 3.971,55 | R$ 2.887,44 | +R$ 3.428,45 |
-| dez/2025 | R$ 4.492,92 | R$ 2.354,47 | +R$ 2.907,08 |
-| jan/2026 | R$ 4.453,97 | R$ 4.989,69 | +R$ 2.946,03 |
-| fev/2026 | R$ 3.591,46 | R$ 6.703,08 | +R$ 3.808,54 |
-| mar/2026** | R$ 1.294,88 | R$ 122,76 | +R$ 6.105,12 |
-| abr/2026 | R$ 3.760,12 | R$ 6.581,82 | +R$ 3.639,88 |
-| mai/2026 | R$ 4.984,92 | R$ 216,75 | +R$ 2.415,08 |
-| jun/2026 | R$ 3.160,94 | R$ 0,00 | +R$ 4.239,06 |
-| **Total** | **R$ 29.969,61** | **R$ 23.856,01** | — |
+| out/2025 (parcial)* | R$ 1.858,85 | R$ 0,00 | +R$ 5.541,15 |
+| nov/2025 | R$ 5.571,55 | R$ 2.887,44 | +R$ 1.828,45 |
+| dez/2025 | R$ 6.092,92 | R$ 2.354,47 | +R$ 1.307,08 |
+| jan/2026 | R$ 6.053,97 | R$ 4.989,69 | +R$ 1.346,03 |
+| fev/2026 | R$ 5.191,46 | R$ 6.703,08 | +R$ 2.208,54 |
+| mar/2026** | R$ 2.894,88 | R$ 122,76 | +R$ 4.505,12 |
+| abr/2026 | R$ 5.360,12 | R$ 6.581,82 | +R$ 2.039,88 |
+| mai/2026 | R$ 6.584,92 | R$ 216,75 | +R$ 815,08 |
+| jun/2026 | R$ 4.760,94 | R$ 0,00 | +R$ 2.639,06 |
+| **Total** | **R$ 44.369,61** | **R$ 23.856,01** | — |
 
 *(Atualizado apos reclassificar Preply de Viagem para Vida Real — ver secao
-"Excecao confirmada: Preply → Vida Real" acima.)*
+"Excecao confirmada: Preply → Vida Real" — e apos incluir o gasto fixo de
+Moradia/Financiamento — ver secao "Gasto fixo: Moradia/Financiamento" abaixo.)*
+
+## Gasto fixo: Moradia/Financiamento (R$ 1.600/mes)
+
+A pedido do usuario, foi adicionado um gasto fixo mensal de **R$ 1.600**
+referente ao pagamento do financiamento da casa. Esse valor **nao vem de
+`transactions.json`** (nao passa pelo cartao de credito, e debitado
+diretamente em conta) — e injetado como uma categoria sintetica
+(`Moradia/Financiamento`) por `data/build_dashboard_data.py`, um lancamento
+de R$ 1.600 por mes, em **todos os 9 meses do painel, inclusive out/2025
+(parcial)**. Ele entra como parte de "Vida Real" (soma ao total do mes e ao
+calculo de sobra vs. orcamento), igual as demais categorias. Se o valor ou
+o periodo mudar no futuro, ajuste as constantes `FIXED_AMOUNT`/`FIXED_CATEGORY`
+no topo desse script e rode `py data/build_dashboard_data.py` novamente,
+depois cole o JSON gerado no `const DATA = ...` de `dashboard.html`.
+
+## Drill-down por categoria (painel interativo)
+
+O grafico "Gasto Vida Real por categoria e mes" agora e clicavel:
+
+- **Clique num item da legenda** para ver todos os lancamentos daquela
+  categoria no periodo inteiro (todos os meses).
+- **Clique num segmento da barra empilhada** (categoria + mes especifico)
+  para ver so os lancamentos daquele mes naquela categoria.
+- Um painel abre logo abaixo do grafico com a lista de lancamentos (data,
+  descricao, origem do cartao, valor) e o total filtrado. Clicar de novo no
+  mesmo item, ou no botao "Fechar", fecha o painel.
+
+Isso e possivel porque `build_dashboard_data.py` agora tambem exporta
+`transactions_by_category` (lista de lancamentos por categoria, com data,
+descricao, mes e origem) dentro do `DATA` embutido em `dashboard.html`.
 
 \* out/2025 so tem 2 compras Amazon do cartao adicional (cauda da fatura de
 nov/2025) — excluido das medias no painel.

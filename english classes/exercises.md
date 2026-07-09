@@ -88,6 +88,58 @@ Gabarito no final do arquivo. Tente responder antes de olhar.
 
 ---
 
+## 5. Suggest vs. Suggestion (armadilha recorrente)
+
+"Suggest" é verbo; "suggestion" é substantivo. E "suggest"/"recommend" **não usam "to + verbo"** como em português ("sugiro você usar").
+
+### 5.1 Escolha a forma correta
+
+1. Please correct the parameters according to my (suggest / suggestion) below.
+2. I (suggest / suggestion) you check the routing before closing the PO.
+3. Based on your (suggest / suggestion), we changed the MRP settings.
+4. I strongly (suggest / recommend) using the updated template.
+
+### 5.2 Corrija a frase
+
+1. "Correct these parameters according to my suggest below."
+2. "I strong suggest you to use the solution I told before."
+3. "He gave me a good suggest about the routing."
+4. "I suggest to change the parameters." (dica: "suggest" também não usa "to + verbo" como complemento direto)
+
+---
+
+## 6. Future time clauses (until / when / before / after + presente simples)
+
+Depois de **until, when, before, after** falando de algo que ainda vai acontecer, o inglês usa **presente simples** — nunca passado, nunca "will".
+
+### 6.1 Escolha a forma correta
+
+1. Use this workaround until we (found / find) the root cause.
+2. When he (will arrive / arrives), send him the file.
+3. Before you (will close / close) the PO, check the routing.
+4. After IT (fixes / will fix) the issue, we'll run the tests again.
+
+### 6.2 Corrija a frase
+
+1. "Use the solution I told before until we found the root cause."
+2. "When the IT team will finish the analysis, I will let you know."
+3. "Before we will close the ticket, double check the parameters."
+
+---
+
+## 7. Comma splices (vírgula não junta duas frases completas)
+
+Se você tem duas frases completas (cada uma com sujeito + verbo), **vírgula sozinha não é suficiente** para juntar as duas. Use ponto, ponto e vírgula, ou uma conjunção (and/but/so).
+
+### 7.1 Corrija a frase (separe ou conecte corretamente)
+
+1. "Check the attached file, you must correct some routings of these materials."
+2. "I checked the parameters, they are all correct."
+3. "He sent the PO yesterday, the supplier hasn't confirmed it yet."
+4. "We found the root cause, now we need to apply the fix."
+
+---
+
 ## Gabarito
 
 ### 1.1
@@ -147,3 +199,32 @@ Gabarito no final do arquivo. Tente responder antes de olhar.
 1. "I ran some tests in the homologation/staging environment."
 2. "He was upset about the delay."
 3. "She was humming while working."
+
+### 5.1
+1. suggestion
+2. suggest
+3. suggestion
+4. recommend
+
+### 5.2
+1. "Correct these parameters according to my suggestion below."
+2. "I strongly suggest you use the solution I mentioned before."
+3. "He gave me a good suggestion about the routing."
+4. "I suggest changing the parameters." (ou "I suggest you change the parameters.")
+
+### 6.1
+1. find
+2. arrives
+3. close
+4. fixes
+
+### 6.2
+1. "Use the solution I mentioned before until we find the root cause."
+2. "When the IT team finishes the analysis, I will let you know."
+3. "Before we close the ticket, double check the parameters."
+
+### 7.1
+1. "Check the attached file. You must correct some routings of these materials." (ou "...file — you must...")
+2. "I checked the parameters, and they are all correct."
+3. "He sent the PO yesterday, but the supplier hasn't confirmed it yet."
+4. "We found the root cause, so now we need to apply the fix."

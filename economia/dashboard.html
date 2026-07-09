@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Painel de Gastos - Raphael</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --good:           #006300;
+    --critical:       #d03b3b;
+    --series-1: #2a78d6; /* Mercado/Supermercado - blue */
+    --series-2: #1baf7a; /* Transporte - aqua */
+    --series-3: #eda100; /* Alimentacao - yellow */
+    --series-4: #008300; /* Assinaturas - green */
+    --series-5: #4a3aa7; /* Compras Online - violet */
+    --series-6: #e34948; /* Saude/Farmacia - red */
+    --series-7: #e87ba4; /* Outros - magenta */
+    --series-8: #7a5230; /* Moradia/Financiamento - brown */
+    --viagem:   #eb6834; /* Viagem accent - orange, distinct from routine categories */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --good:           #0ca30c;
+      --critical:       #e66767;
+      --series-1: #3987e5;
+      --series-2: #199e70;
+      --series-3: #c98500;
+      --series-4: #008300;
+      --series-5: #9085e9;
+      --series-6: #e66767;
+      --series-7: #d55181;
+      --series-8: #a97c53;
+      --viagem:   #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page-plane: #0d0d0d; --text-primary:#ffffff; --text-secondary:#c3c2b7;
+    --text-muted:#898781; --gridline:#2c2c2a; --baseline:#383835; --border: rgba(255,255,255,0.10);
+    --good:#0ca30c; --critical:#e66767;
+    --series-1:#3987e5; --series-2:#199e70; --series-3:#c98500; --series-4:#008300;
+    --series-5:#9085e9; --series-6:#e66767; --series-7:#d55181; --series-8:#a97c53; --viagem:#d95926;
+  }
+  :root[data-theme="light"] {
+    --surface-1:#fcfcfb; --page-plane:#f9f9f7; --text-primary:#0b0b0b; --text-secondary:#52514e;
+    --text-muted:#898781; --gridline:#e1e0d9; --baseline:#c3c2b7; --border: rgba(11,11,11,0.10);
+    --good:#006300; --critical:#d03b3b;
+    --series-1:#2a78d6; --series-2:#1baf7a; --series-3:#eda100; --series-4:#008300;
+    --series-5:#4a3aa7; --series-6:#e34948; --series-7:#e87ba4; --series-8:#7a5230; --viagem:#eb6834;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .subtitle { color: var(--text-secondary); margin: 0 0 28px; font-size: 0.95rem; }
+  h2 { font-size: 1.15rem; margin: 40px 0 4px; }
+  .section-note { color: var(--text-secondary); font-size: 0.88rem; margin: 0 0 16px; max-width: 720px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .stat-tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-tile .label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 6px; }
+  .stat-tile .value { font-size: 1.55rem; font-weight: 600; font-variant-numeric: proportional-nums; }
+  .stat-tile .value.viagem { color: var(--viagem); }
+  .stat-tile .sub { color: var(--text-muted); font-size: 0.78rem; margin-top: 4px; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 20px 12px; margin-bottom: 8px;
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 4px 0 14px; font-size: 0.8rem; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 3px 6px; border-radius: 6px; border: 1px solid transparent; }
+  .legend-item:hover { background: var(--gridline); }
+  .legend-item.active { border-color: var(--border); background: var(--gridline); color: var(--text-primary); font-weight: 600; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .cat-seg { cursor: pointer; }
+  .cat-seg.dimmed { opacity: 0.35; }
+
+  svg { display: block; width: 100%; height: auto; overflow: visible; font-family: inherit; }
+  .axis-label { fill: var(--text-muted); font-size: 11px; }
+  .gridline { stroke: var(--gridline); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1; }
+  .bar { cursor: pointer; }
+  .budget-line { stroke: var(--text-muted); stroke-width: 1.5; }
+  .budget-label { fill: var(--text-muted); font-size: 11px; }
+  .delta-good { fill: var(--good); font-size: 11px; font-weight: 600; }
+  .delta-bad { fill: var(--critical); font-size: 11px; font-weight: 600; }
+  .month-label { fill: var(--text-secondary); font-size: 11px; }
+  .value-label { fill: var(--text-primary); font-size: 11px; font-weight: 600; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 50;
+    background: var(--text-primary); color: var(--surface-1);
+    font-size: 12px; padding: 6px 10px; border-radius: 6px;
+    opacity: 0; transition: opacity 0.08s ease; white-space: nowrap;
+  }
+  details.table-toggle { margin: 10px 0 24px; }
+  details.table-toggle summary {
+    cursor: pointer; color: var(--text-secondary); font-size: 0.85rem; user-select: none;
+  }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
+  table.data-table th, table.data-table td {
+    text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--gridline);
+    font-variant-numeric: tabular-nums;
+  }
+  table.data-table th:first-child, table.data-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.data-table thead th { color: var(--text-secondary); font-weight: 600; font-size: 0.75rem; }
+
+  .detail-card { display: none; }
+  .detail-card.open { display: block; }
+  .detail-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .detail-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; }
+  .detail-total { color: var(--text-secondary); font-size: 0.85rem; }
+  .detail-close { cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; }
+  .detail-close:hover { color: var(--text-primary); background: var(--gridline); }
+  .detail-scroll { max-height: 360px; overflow-y: auto; }
+
+  .viagem-banner {
+    background: var(--surface-1);
+    background: color-mix(in srgb, var(--viagem) 12%, var(--surface-1));
+    border: 1px solid var(--border);
+    border: 1px solid color-mix(in srgb, var(--viagem) 35%, transparent);
+    border-radius: 12px; padding: 20px 22px; margin: 12px 0 8px;
+  }
+  .viagem-banner .value { color: var(--viagem); font-size: 2rem; font-weight: 700; }
+  .viagem-banner .label { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 4px; }
+  .viagem-banner .note { color: var(--text-secondary); font-size: 0.85rem; margin-top: 10px; max-width: 640px; }
+
+  .notes-box {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; font-size: 0.87rem; color: var(--text-secondary);
+  }
+  .notes-box h3 { color: var(--text-primary); font-size: 0.95rem; margin: 0 0 8px; }
+  .notes-box ul { margin: 6px 0 14px; padding-left: 20px; }
+  .notes-box li { margin-bottom: 6px; }
+  .notes-box p:last-child, .notes-box ul:last-child { margin-bottom: 0; }
+  code { background: var(--gridline); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+
+  footer { color: var(--text-muted); font-size: 0.78rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Painel de Gastos Pessoais</h1>
+  <p class="subtitle">Raphael &middot; Nov/2025 &ndash; Jun/2026 &middot; Cartoes Bradesco e Nubank &middot; Salario liquido disponivel: R$ 7.400/mes</p>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <h2>Orcamento vs. Gasto "Vida Real" por mes</h2>
+  <p class="section-note">Compara o orcamento mensal disponivel (R$ 7.400) com o total gasto em rotina (exclui viagem). A barra cinza pontilhada marca o orcamento; o numero abaixo de cada mes mostra quanto sobrou (verde) ou faltou (vermelho).</p>
+  <div class="card">
+    <div id="chartBudget"></div>
+  </div>
+  <details class="table-toggle"><summary>Ver tabela de dados</summary><div id="tableBudget"></div></details>
+
+  <h2>Gasto "Vida Real" por categoria e mes</h2>
+  <p class="section-note">Categorias derivadas automaticamente a partir do nome do estabelecimento. Clique numa categoria na legenda (todos os meses) ou num segmento da barra (mes especifico) para ver os lancamentos que a compoem. Viagem fica de fora deste grafico (ver secao dedicada abaixo).</p>
+  <div class="card">
+    <div class="legend" id="catLegend"></div>
+    <div id="chartCategories"></div>
+  </div>
+  <div class="card detail-card" id="categoryDetailCard">
+    <div class="detail-header">
+      <div class="detail-title"><span class="swatch" id="detailSwatch"></span><span id="detailTitle"></span></div>
+      <div class="detail-total" id="detailTotal"></div>
+      <button class="detail-close" onclick="closeCategoryDetail()">Fechar</button>
+    </div>
+    <div class="detail-scroll"><table class="data-table" id="detailTable"></table></div>
+  </div>
+  <details class="table-toggle"><summary>Ver tabela de dados</summary><div id="tableCategories"></div></details>
+
+  <h2>Viagem (excluida do orcamento de rotina)</h2>
+  <div class="viagem-banner">
+    <div class="label">Total gasto em viagem no periodo (Nov/2025 &ndash; Jun/2026)</div>
+    <div class="value" id="viagemTotal">-</div>
+    <div class="note">Inclui: qualquer transacao cobrada em USD/EUR (passagens, IOF de transacao no exterior) e qualquer reserva de viagem mesmo cobrada em reais (hoteis, Airbnb, Booking.com, aluguel de carro, passeios/ingressos, visto). Preply (aulas de ingles) foi reclassificado para Vida Real a pedido do usuario, mesmo sendo cobrado em EUR/USD - e uma assinatura de estudos, nao uma despesa da viagem. Esse valor NAO entra nos graficos de rotina acima nem no calculo de "sobra" mensal. Ver <code>README.md</code> para a lista completa de regras.</div>
+  </div>
+
+  <div class="notes-box">
+    <h3>Avisos importantes</h3>
+    <ul id="notesList"></ul>
+  </div>
+
+  <footer>Gerado a partir de economia/data/transactions.json &middot; <span id="txnCount"></span> transacoes normalizadas &middot; ver economia/README.md para metodologia completa.</footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {"budget":7400.0,"months":["2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"monthly":{"2025-10":{"vida_real_total":1858.85,"viagem_total":0.0,"categories":{"Mercado/Supermercado":199.99,"Transporte":0.0,"Alimentacao/Restaurantes":0.0,"Assinaturas":0.0,"Compras Online":58.86,"Saude/Farmacia":0.0,"Outros":0.0,"Moradia/Financiamento":1600.0},"n_vida_real":3,"n_viagem":0,"budget":7400.0,"remaining":5541.15},"2025-11":{"vida_real_total":5571.55,"viagem_total":2887.44,"categories":{"Mercado/Supermercado":1129.28,"Transporte":421.55,"Alimentacao/Restaurantes":233.15,"Assinaturas":449.67,"Compras Online":434.01,"Saude/Farmacia":0.0,"Outros":1303.89,"Moradia/Financiamento":1600.0},"n_vida_real":48,"n_viagem":3,"budget":7400.0,"remaining":1828.45},"2025-12":{"vida_real_total":6092.92,"viagem_total":2354.47,"categories":{"Mercado/Supermercado":2891.29,"Transporte":443.46,"Alimentacao/Restaurantes":182.87,"Assinaturas":268.22,"Compras Online":0.0,"Saude/Farmacia":29.9,"Outros":677.18,"Moradia/Financiamento":1600.0},"n_vida_real":49,"n_viagem":3,"budget":7400.0,"remaining":1307.08},"2026-01":{"vida_real_total":6053.97,"viagem_total":4989.69,"categories":{"Mercado/Supermercado":2415.85,"Transporte":387.52,"Alimentacao/Restaurantes":148.01,"Assinaturas":395.44,"Compras Online":345.75,"Saude/Farmacia":41.89,"Outros":719.51,"Moradia/Financiamento":1600.0},"n_vida_real":58,"n_viagem":6,"budget":7400.0,"remaining":1346.03},"2026-02":{"vida_real_total":5191.46,"viagem_total":6703.08,"categories":{"Mercado/Supermercado":1208.64,"Transporte":244.88,"Alimentacao/Restaurantes":222.0,"Assinaturas":268.16,"Compras Online":374.64,"Saude/Farmacia":9.9,"Outros":1263.24,"Moradia/Financiamento":1600.0},"n_vida_real":35,"n_viagem":10,"budget":7400.0,"remaining":2208.54},"2026-03":{"vida_real_total":2894.88,"viagem_total":122.76,"categories":{"Mercado/Supermercado":1026.82,"Transporte":103.16,"Alimentacao/Restaurantes":0.0,"Assinaturas":68.11,"Compras Online":9.99,"Saude/Farmacia":36.8,"Outros":50.0,"Moradia/Financiamento":1600.0},"n_vida_real":18,"n_viagem":1,"budget":7400.0,"remaining":4505.12},"2026-04":{"vida_real_total":5360.12,"viagem_total":6581.82,"categories":{"Mercado/Supermercado":2513.39,"Transporte":43.95,"Alimentacao/Restaurantes":112.3,"Assinaturas":400.96,"Compras Online":209.74,"Saude/Farmacia":3.12,"Outros":476.66,"Moradia/Financiamento":1600.0},"n_vida_real":37,"n_viagem":14,"budget":7400.0,"remaining":2039.88},"2026-05":{"vida_real_total":6584.92,"viagem_total":216.75,"categories":{"Mercado/Supermercado":1922.5,"Transporte":617.45,"Alimentacao/Restaurantes":152.86,"Assinaturas":550.28,"Compras Online":1081.66,"Saude/Farmacia":0.0,"Outros":660.17,"Moradia/Financiamento":1600.0},"n_vida_real":40,"n_viagem":1,"budget":7400.0,"remaining":815.08},"2026-06":{"vida_real_total":4760.94,"viagem_total":0.0,"categories":{"Mercado/Supermercado":1335.6,"Transporte":440.51,"Alimentacao/Restaurantes":11.99,"Assinaturas":890.76,"Compras Online":213.88,"Saude/Farmacia":0.0,"Outros":268.2,"Moradia/Financiamento":1600.0},"n_vida_real":33,"n_viagem":0,"budget":7400.0,"remaining":2639.06}},"total_viagem":23856.01,"total_vida_real":44369.61,"categories":["Mercado/Supermercado","Transporte","Alimentacao/Restaurantes","Assinaturas","Compras Online","Saude/Farmacia","Outros","Moradia/Financiamento"],"n_transactions":359,"edge_case_count":1,"edge_case_total":117.62,"transactions_by_category":{"Mercado/Supermercado":[{"date":"2025-10-30","month":"2025-10","description":"AMAZONMKTPLC*ATACADOGE","amount":199.99,"source":"bradesco"},{"date":"2025-11-01","month":"2025-11","description":"COOPER JARAGUA ILHA","amount":15.71,"source":"bradesco"},{"date":"2025-11-04","month":"2025-11","description":"MERCADOLIVRE*MERCADOLIVRE","amount":78.84,"source":"bradesco"},{"date":"2025-11-06","month":"2025-11","description":"FORT ATACADISTA 85","amount":40.27,"source":"bradesco"},{"date":"2025-11-07","month":"2025-11","description":"FORT ATACADISTA 85","amount":18.49,"source":"bradesco"},{"date":"2025-11-10","month":"2025-11","description":"MERCADOLIVRE*MERCADOLIVRE","amount":89.05,"source":"bradesco"},{"date":"2025-11-12","month":"2025-11","description":"FORT ATACADISTA 85","amount":45.77,"source":"bradesco"},{"date":"2025-11-15","month":"2025-11","description":"COOPER JARAGUA ILHA","amount":203.6,"source":"bradesco"},{"date":"2025-11-15","month":"2025-11","description":"ANGELONI SUPER LOJA 10","amount":39.66,"source":"bradesco"},{"date":"2025-11-18","month":"2025-11","description":"JOZEL COMERCIO DE VER","amount":10.24,"source":"bradesco"},{"date":"2025-11-22","month":"2025-11","description":"MERCADOLIVRE*MERCADOLIVRE","amount":49.9,"source":"bradesco"},{"date":"2025-11-22","month":"2025-11","description":"COOPER FILIAL JARAGUA","amount":32.38,"source":"bradesco"},{"date":"2025-11-26","month":"2025-11","description":"MERCADOLIVRE*MERCADOLIVRE","amount":32.38,"source":"bradesco"},{"date":"2025-11-26","month":"2025-11","description":"ANGELONI SUPER LOJA 10","amount":455.0,"source":"bradesco"},{"date":"2025-11-29","month":"2025-11","description":"PRONER SUPERMERCADOS","amount":17.99,"source":"bradesco"},{"date":"2025-12-01","month":"2025-12","description":"Mercadolivre*Mercadol","amount":101.91,"source":"nubank"},{"date":"2025-12-03","month":"2025-12","description":"JozelComercioDe","amount":29.2,"source":"bradesco"},{"date":"2025-12-06","month":"2025-12","description":"KOMPRAO KOCH ATACADIST","amount":49.22,"source":"bradesco"},{"date":"2025-12-08","month":"2025-12","description":"JozelComercioDe","amount":9.38,"source":"bradesco"},{"date":"2025-12-10","month":"2025-12","description":"CENTENARIO CONVENIEN","amount":12.5,"source":"bradesco"},{"date":"2025-12-12","month":"2025-12","description":"MERCADO NILMAR","amount":277.55,"source":"bradesco"},{"date":"2025-12-12","month":"2025-12","description":"COOPER JARAGUA ILHA","amount":346.04,"source":"bradesco"},{"date":"2025-12-13","month":"2025-12","description":"COOPER FILIAL JARAGUA","amount":403.93,"source":"bradesco"},{"date":"2025-12-16","month":"2025-12","description":"COOPER FILIAL FARMACIA","amount":4.83,"source":"bradesco"},{"date":"2025-12-17","month":"2025-12","description":"CENTENARIO CONVENIEN","amount":8.0,"source":"bradesco"},{"date":"2025-12-17","month":"2025-12","description":"MERCADO NILMAR","amount":523.5,"source":"bradesco"},{"date":"2025-12-17","month":"2025-12","description":"COOPER JARAGUA ILHA","amount":306.11,"source":"bradesco"},{"date":"2025-12-17","month":"2025-12","description":"KOMPRAO KOCH ATACADIST","amount":75.94,"source":"bradesco"},{"date":"2025-12-18","month":"2025-12","description":"MERCADO NILMAR","amount":97.8,"source":"bradesco"},{"date":"2025-12-18","month":"2025-12","description":"CENTENARIO CONVENIEN","amount":11.0,"source":"bradesco"},{"date":"2025-12-18","month":"2025-12","description":"KOMPRAO ATACADISTA","amount":15.99,"source":"bradesco"},{"date":"2025-12-18","month":"2025-12","description":"COOPER JARAGUA ILHA","amount":192.6,"source":"bradesco"},{"date":"2025-12-19","month":"2025-12","description":"COOPER FILIAL JARAGUA","amount":44.89,"source":"bradesco"},{"date":"2025-12-23","month":"2025-12","description":"SUPERVIZA ATACADISTA","amount":258.02,"source":"bradesco"},{"date":"2025-12-23","month":"2025-12","description":"MERCADO INDIANO","amount":12.0,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"PRONER SUPERMERCADOS","amount":48.99,"source":"bradesco"},{"date":"2025-12-29","month":"2025-12","description":"ATACADAO 0739","amount":8.99,"source":"bradesco"},{"date":"2025-12-29","month":"2025-12","description":"ATACADAO 0739","amount":52.9,"source":"bradesco"},{"date":"2026-01-02","month":"2026-01","description":"MERCADINHO BEMBOM","amount":47.74,"source":"bradesco"},{"date":"2026-01-04","month":"2026-01","description":"FORT ATACADISTA 85","amount":17.47,"source":"bradesco"},{"date":"2026-01-04","month":"2026-01","description":"Lopes Sup Carapicuiba","amount":18.98,"source":"nubank"},{"date":"2026-01-05","month":"2026-01","description":"FORT ATACADISTA 85","amount":41.94,"source":"bradesco"},{"date":"2026-01-06","month":"2026-01","description":"Mercadolivre*4produto","amount":122.21,"source":"nubank"},{"date":"2026-01-07","month":"2026-01","description":"FORT ATACADISTA 85","amount":30.7,"source":"bradesco"},{"date":"2026-01-08","month":"2026-01","description":"KOMPRAO ATACADISTA","amount":23.18,"source":"bradesco"},{"date":"2026-01-08","month":"2026-01","description":"KOMPRAO ATACADISTA","amount":56.2,"source":"bradesco"},{"date":"2026-01-09","month":"2026-01","description":"SUPERMERC GIASSI LJ15","amount":144.84,"source":"bradesco"},{"date":"2026-01-10","month":"2026-01","description":"COOPER JARAGUA ILHA","amount":118.37,"source":"bradesco"},{"date":"2026-01-10","month":"2026-01","description":"Mercadolivre*2produto","amount":174.68,"source":"nubank"},{"date":"2026-01-15","month":"2026-01","description":"COOPER FARMACIA ILHA","amount":8.49,"source":"bradesco"},{"date":"2026-01-15","month":"2026-01","description":"COOPER JARAGUA ILHA","amount":142.93,"source":"bradesco"},{"date":"2026-01-15","month":"2026-01","description":"KOMPRAO KOCH ATACADIST","amount":278.77,"source":"bradesco"},{"date":"2026-01-16","month":"2026-01","description":"Mercadolivre*Mercadol","amount":139.58,"source":"nubank"},{"date":"2026-01-17","month":"2026-01","description":"KOMPRAO KOCH ATACADIST","amount":13.78,"source":"bradesco"},{"date":"2026-01-20","month":"2026-01","description":"FORT ATACADISTA 85","amount":12.99,"source":"bradesco"},{"date":"2026-01-24","month":"2026-01","description":"KOMPRAO KOCH ATACADIST","amount":40.94,"source":"bradesco"},{"date":"2026-01-24","month":"2026-01","description":"COOPER JARAGUA ILHA","amount":129.89,"source":"bradesco"},{"date":"2026-01-24","month":"2026-01","description":"COOPER JARAGUA ILHA","amount":521.83,"source":"bradesco"},{"date":"2026-01-25","month":"2026-01","description":"DENIS MERCADO E CONVENIEN","amount":1.5,"source":"bradesco"},{"date":"2026-01-25","month":"2026-01","description":"DENIS MERCADO E CONVENIEN","amount":7.0,"source":"bradesco"},{"date":"2026-01-29","month":"2026-01","description":"MERCADO NILMAR","amount":191.66,"source":"bradesco"},{"date":"2026-01-29","month":"2026-01","description":"CENTENARIO CONVENIEN","amount":8.0,"source":"bradesco"},{"date":"2026-01-29","month":"2026-01","description":"COOPER JARAGUA ILHA","amount":114.18,"source":"bradesco"},{"date":"2026-01-30","month":"2026-01","description":"CENTENARIO CONVENIEN","amount":8.0,"source":"bradesco"},{"date":"2026-02-01","month":"2026-02","description":"FORT ATACADISTA 85","amount":61.45,"source":"bradesco"},{"date":"2026-02-02","month":"2026-02","description":"JOZEL COM DE FRUTAS","amount":28.64,"source":"bradesco"},{"date":"2026-02-03","month":"2026-02","description":"FORT ATACADISTA 85","amount":27.94,"source":"bradesco"},{"date":"2026-02-03","month":"2026-02","description":"Mercadolivre*Mercadol","amount":42.9,"source":"nubank"},{"date":"2026-02-08","month":"2026-02","description":"ANGELONI SUPER LOJA 10","amount":41.28,"source":"bradesco"},{"date":"2026-02-08","month":"2026-02","description":"Komprao Koch Atacadista","amount":52.51,"source":"nubank"},{"date":"2026-02-09","month":"2026-02","description":"CENTENARIO CONVENIEN","amount":5.0,"source":"bradesco"},{"date":"2026-02-12","month":"2026-02","description":"JozelComercioDe","amount":12.31,"source":"bradesco"},{"date":"2026-02-14","month":"2026-02","description":"KOMPRAO KOCH ATACADIST","amount":80.08,"source":"bradesco"},{"date":"2026-02-14","month":"2026-02","description":"MERCADO FURLANI LTDA","amount":12.99,"source":"bradesco"},{"date":"2026-02-15","month":"2026-02","description":"KOMPRAO KOCH ATACADIST","amount":21.48,"source":"bradesco"},{"date":"2026-02-19","month":"2026-02","description":"CENTENARIO CONVENIEN","amount":6.0,"source":"bradesco"},{"date":"2026-02-20","month":"2026-02","description":"COOPER JARAGUA ILHA","amount":456.15,"source":"bradesco"},{"date":"2026-02-21","month":"2026-02","description":"SUPERMERC GIASSI LJ15","amount":73.08,"source":"bradesco"},{"date":"2026-02-25","month":"2026-02","description":"Fort Atacadista","amount":91.32,"source":"nubank"},{"date":"2026-02-26","month":"2026-02","description":"Mercadolivre*Mercadol","amount":173.13,"source":"nubank"},{"date":"2026-02-26","month":"2026-02","description":"Fort Atacadista","amount":22.38,"source":"nubank"},{"date":"2026-03-01","month":"2026-03","description":"Sonda Fazendinha","amount":53.43,"source":"nubank"},{"date":"2026-03-18","month":"2026-03","description":"Komprao Atacadista","amount":49.26,"source":"nubank"},{"date":"2026-03-26","month":"2026-03","description":"KOMPRAO","amount":520.64,"source":"bradesco"},{"date":"2026-03-26","month":"2026-03","description":"MERCADO NILMAR","amount":379.51,"source":"bradesco"},{"date":"2026-03-31","month":"2026-03","description":"JOZEL COMERCIO DE VER","amount":23.98,"source":"bradesco"},{"date":"2026-04-02","month":"2026-04","description":"COOPER JARAGUA ILHA","amount":246.9,"source":"bradesco"},{"date":"2026-04-02","month":"2026-04","description":"MERCADO NILMAR","amount":96.0,"source":"bradesco"},{"date":"2026-04-03","month":"2026-04","description":"FORT ATACADISTA 85","amount":77.46,"source":"bradesco"},{"date":"2026-04-05","month":"2026-04","description":"FORT ATACADISTA 85","amount":43.99,"source":"bradesco"},{"date":"2026-04-07","month":"2026-04","description":"Fort Atacadista","amount":7.98,"source":"nubank"},{"date":"2026-04-09","month":"2026-04","description":"FORT ATACADISTA 85","amount":143.56,"source":"bradesco"},{"date":"2026-04-10","month":"2026-04","description":"MERCADO NILMAR","amount":992.27,"source":"bradesco"},{"date":"2026-04-10","month":"2026-04","description":"KOMPRAO","amount":241.36,"source":"bradesco"},{"date":"2026-04-10","month":"2026-04","description":"Centenario Convenien","amount":8.99,"source":"nubank"},{"date":"2026-04-11","month":"2026-04","description":"Mercado Nilmar","amount":510.84,"source":"nubank"},{"date":"2026-04-14","month":"2026-04","description":"FORT ATACADISTA 85","amount":27.39,"source":"bradesco"},{"date":"2026-04-14","month":"2026-04","description":"Supermercado Portal L","amount":47.65,"source":"nubank"},{"date":"2026-04-16","month":"2026-04","description":"COOPER JARAGUA ILHA","amount":58.52,"source":"bradesco"},{"date":"2026-04-17","month":"2026-04","description":"COOPER JARAGUA ILHA","amount":10.48,"source":"bradesco"},{"date":"2026-05-10","month":"2026-05","description":"Fort Atacadista","amount":63.27,"source":"nubank"},{"date":"2026-05-11","month":"2026-05","description":"Cooper Jaragua Ilha","amount":301.79,"source":"nubank"},{"date":"2026-05-14","month":"2026-05","description":"Centenario Convenien","amount":24.0,"source":"nubank"},{"date":"2026-05-14","month":"2026-05","description":"Centenario Convenien","amount":22.49,"source":"nubank"},{"date":"2026-05-17","month":"2026-05","description":"Proner Supermercados","amount":53.97,"source":"nubank"},{"date":"2026-05-20","month":"2026-05","description":"VERDUREIRA JOZEL","amount":5.05,"source":"bradesco"},{"date":"2026-05-23","month":"2026-05","description":"RANCHO BOM SUPERMERC","amount":344.79,"source":"bradesco"},{"date":"2026-05-24","month":"2026-05","description":"FORT ATACADISTA 85","amount":45.6,"source":"bradesco"},{"date":"2026-05-27","month":"2026-05","description":"CARREFOUR EXPRESS","amount":11.39,"source":"bradesco"},{"date":"2026-05-29","month":"2026-05","description":"COOPER JARAGUA ILHA","amount":711.21,"source":"bradesco"},{"date":"2026-05-31","month":"2026-05","description":"KOMPRAO","amount":338.94,"source":"bradesco"},{"date":"2026-06-02","month":"2026-06","description":"MERCADOLIVRE*MERCADOLIVRE","amount":76.15,"source":"bradesco"},{"date":"2026-06-02","month":"2026-06","description":"JozelComercioDe","amount":3.9,"source":"bradesco"},{"date":"2026-06-03","month":"2026-06","description":"MERCADOLIVRE*MERCADOLIVRE","amount":78.9,"source":"bradesco"},{"date":"2026-06-06","month":"2026-06","description":"MERCADINHO LISBOA","amount":79.98,"source":"bradesco"},{"date":"2026-06-08","month":"2026-06","description":"CENTENARIO CONVENIEN","amount":6.0,"source":"bradesco"},{"date":"2026-06-10","month":"2026-06","description":"FORT ATACADISTA 85","amount":27.95,"source":"bradesco"},{"date":"2026-06-12","month":"2026-06","description":"CENTENARIO CONVENIEN","amount":19.75,"source":"bradesco"},{"date":"2026-06-12","month":"2026-06","description":"ANGELONI SUPER LOJA 10","amount":81.61,"source":"bradesco"},{"date":"2026-06-13","month":"2026-06","description":"RANCHO BOM SUPERMERC","amount":9.9,"source":"bradesco"},{"date":"2026-06-14","month":"2026-06","description":"FORT ATACADISTA 85","amount":129.8,"source":"bradesco"},{"date":"2026-06-14","month":"2026-06","description":"FORT ATACADISTA 85","amount":6.59,"source":"bradesco"},{"date":"2026-06-18","month":"2026-06","description":"MERCADO NILMAR","amount":490.68,"source":"bradesco"},{"date":"2026-06-18","month":"2026-06","description":"COOPER JARAGUA ILHA","amount":217.81,"source":"bradesco"},{"date":"2026-06-21","month":"2026-06","description":"Supermercado Portal L","amount":106.58,"source":"nubank"}],"Transporte":[{"date":"2025-11-21","month":"2025-11","description":"PostosFlex","amount":72.98,"source":"bradesco"},{"date":"2025-11-22","month":"2025-11","description":"POSTO GRID","amount":180.61,"source":"bradesco"},{"date":"2025-11-28","month":"2025-11","description":"POSTO M7 FENIX","amount":7.98,"source":"bradesco"},{"date":"2025-11-28","month":"2025-11","description":"PostosFlex","amount":9.98,"source":"bradesco"},{"date":"2025-11-30","month":"2025-11","description":"MPS COMERCIO DE COMBUS","amount":150.0,"source":"bradesco"},{"date":"2025-12-02","month":"2025-12","description":"Dl*99 Ride","amount":15.7,"source":"nubank"},{"date":"2025-12-05","month":"2025-12","description":"PostosFlex","amount":19.98,"source":"bradesco"},{"date":"2025-12-07","month":"2025-12","description":"POSTO M7 RIO CERRO","amount":7.99,"source":"bradesco"},{"date":"2025-12-11","month":"2025-12","description":"Dl*99 Ride","amount":12.0,"source":"nubank"},{"date":"2025-12-12","month":"2025-12","description":"Pg *99 Ride","amount":12.6,"source":"nubank"},{"date":"2025-12-13","month":"2025-12","description":"Pg *99 Ride","amount":11.7,"source":"nubank"},{"date":"2025-12-19","month":"2025-12","description":"Dl*99 Ride","amount":8.08,"source":"nubank"},{"date":"2025-12-20","month":"2025-12","description":"POSTO RIO NEGRINHO M7","amount":100.0,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"AUTO POSTO PLANETA","amount":58.99,"source":"bradesco"},{"date":"2025-12-27","month":"2025-12","description":"POSTO SPREA","amount":196.42,"source":"bradesco"},{"date":"2026-01-04","month":"2026-01","description":"Auto Posto Caracas","amount":125.53,"source":"nubank"},{"date":"2026-01-07","month":"2026-01","description":"Postosflex","amount":11.99,"source":"nubank"},{"date":"2026-01-10","month":"2026-01","description":"PostosFlex","amount":50.0,"source":"bradesco"},{"date":"2026-01-15","month":"2026-01","description":"PostosFlex","amount":100.0,"source":"bradesco"},{"date":"2026-01-17","month":"2026-01","description":"POSTO GRID","amount":100.0,"source":"bradesco"},{"date":"2026-02-05","month":"2026-02","description":"Dl*99 Ride","amount":7.56,"source":"nubank"},{"date":"2026-02-25","month":"2026-02","description":"Posto Grid","amount":237.32,"source":"nubank"},{"date":"2026-03-10","month":"2026-03","description":"Dl*99 Ride","amount":10.5,"source":"nubank"},{"date":"2026-03-20","month":"2026-03","description":"Pg *99 Ride","amount":18.8,"source":"nubank"},{"date":"2026-03-22","month":"2026-03","description":"Uber - NuPay","amount":10.08,"source":"nubank"},{"date":"2026-03-22","month":"2026-03","description":"Dl*99 Ride","amount":20.3,"source":"nubank"},{"date":"2026-03-23","month":"2026-03","description":"Uber - NuPay","amount":12.76,"source":"nubank"},{"date":"2026-03-26","month":"2026-03","description":"Uber - NuPay","amount":18.73,"source":"nubank"},{"date":"2026-03-27","month":"2026-03","description":"PostosFlex","amount":11.99,"source":"bradesco"},{"date":"2026-04-03","month":"2026-04","description":"POSTO M7 RIO CERRO","amount":29.95,"source":"bradesco"},{"date":"2026-04-04","month":"2026-04","description":"EPAR ESTACIONAMENTOS","amount":14.0,"source":"bradesco"},{"date":"2026-05-08","month":"2026-05","description":"Uber - NuPay","amount":90.68,"source":"nubank"},{"date":"2026-05-09","month":"2026-05","description":"Dl*99 Ride","amount":33.6,"source":"nubank"},{"date":"2026-05-14","month":"2026-05","description":"Postosflex","amount":13.49,"source":"nubank"},{"date":"2026-05-16","month":"2026-05","description":"Rede de Postos M7","amount":10.99,"source":"nubank"},{"date":"2026-05-18","month":"2026-05","description":"Posto Maca","amount":319.34,"source":"nubank"},{"date":"2026-05-18","month":"2026-05","description":"Auto Posto Tradicao","amount":117.32,"source":"nubank"},{"date":"2026-05-19","month":"2026-05","description":"Dl*99 Ride","amount":19.14,"source":"nubank"},{"date":"2026-05-23","month":"2026-05","description":"Dl *99 Ride","amount":6.37,"source":"nubank"},{"date":"2026-05-28","month":"2026-05","description":"Dl*99 Ride","amount":6.52,"source":"nubank"},{"date":"2026-06-05","month":"2026-06","description":"POSTO METROPOLE DIVISA","amount":122.3,"source":"bradesco"},{"date":"2026-06-07","month":"2026-06","description":"POSTO Z5 LTDA","amount":271.74,"source":"bradesco"},{"date":"2026-06-13","month":"2026-06","description":"POSTO GRID","amount":29.52,"source":"bradesco"},{"date":"2026-06-14","month":"2026-06","description":"Pg *99 Ride","amount":16.95,"source":"nubank"}],"Alimentacao/Restaurantes":[{"date":"2025-11-02","month":"2025-11","description":"HIROKI PASTEL","amount":32.0,"source":"bradesco"},{"date":"2025-11-13","month":"2025-11","description":"HIROKI PASTEL","amount":24.0,"source":"bradesco"},{"date":"2025-11-16","month":"2025-11","description":"URBAN FOOD COMERCIAL","amount":18.0,"source":"bradesco"},{"date":"2025-11-19","month":"2025-11","description":"CERVEJARIA KARSTEN","amount":87.15,"source":"bradesco"},{"date":"2025-11-21","month":"2025-11","description":"DON BASILIO TUTTY LTDA","amount":72.0,"source":"bradesco"},{"date":"2025-12-18","month":"2025-12","description":"Mc Donalds - Arcos Dourados","amount":30.9,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"DREIZEHNLINDEN STUBE","amount":69.3,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"CERVEJARIA BIERBAUM","amount":82.67,"source":"bradesco"},{"date":"2026-01-06","month":"2026-01","description":"IFD*COMERCIO DE ALIMEN","amount":41.0,"source":"bradesco"},{"date":"2026-01-11","month":"2026-01","description":"CAFE CULTURA GARTEN","amount":25.01,"source":"bradesco"},{"date":"2026-01-13","month":"2026-01","description":"VITA EMPORIO E GASTRON","amount":82.0,"source":"bradesco"},{"date":"2026-02-05","month":"2026-02","description":"CERVEJARIA KARSTEN","amount":138.0,"source":"bradesco"},{"date":"2026-02-11","month":"2026-02","description":"Don Basilio Tutty","amount":84.0,"source":"nubank"},{"date":"2026-04-03","month":"2026-04","description":"POMERODE ALIMENTOS","amount":32.0,"source":"bradesco"},{"date":"2026-04-03","month":"2026-04","description":"Cervejaria (Pomerode)","amount":55.8,"source":"bradesco"},{"date":"2026-04-04","month":"2026-04","description":"POPCORN GOURMET","amount":5.0,"source":"bradesco"},{"date":"2026-04-11","month":"2026-04","description":"Mc Donalds - Arcos Dourados","amount":10.5,"source":"bradesco"},{"date":"2026-04-19","month":"2026-04","description":"Mp *Cafeterialide","amount":9.0,"source":"nubank"},{"date":"2026-05-09","month":"2026-05","description":"Churrascaria e Pizzaria","amount":97.98,"source":"nubank"},{"date":"2026-05-28","month":"2026-05","description":"BOTECO SEU FRANCA","amount":54.88,"source":"bradesco"},{"date":"2026-06-06","month":"2026-06","description":"PDV*NASCIMENTO E SILVA","amount":11.99,"source":"bradesco"}],"Assinaturas":[{"date":"2025-11-07","month":"2025-11","description":"Preply","amount":142.13,"source":"bradesco"},{"date":"2025-11-24","month":"2025-11","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2025-11-26","month":"2025-11","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2025-11-26","month":"2025-11","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2025-11-27","month":"2025-11","description":"Clubewine","amount":67.5,"source":"nubank"},{"date":"2025-12-12","month":"2025-12","description":"Clubewprepago (parcela 1/12)","amount":28.18,"source":"nubank"},{"date":"2025-12-24","month":"2025-12","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2025-12-26","month":"2025-12","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2026-01-01","month":"2026-01","description":"Clubewprepago (parcela 2/12)","amount":28.12,"source":"nubank"},{"date":"2026-01-24","month":"2026-01","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-01-28","month":"2026-01","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2026-01-28","month":"2026-01","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2026-01-30","month":"2026-01","description":"Preply","amount":127.28,"source":"bradesco"},{"date":"2026-02-01","month":"2026-02","description":"Clubewprepago (parcela 3/12)","amount":28.12,"source":"nubank"},{"date":"2026-02-24","month":"2026-02","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-02-25","month":"2026-02","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2026-02-25","month":"2026-02","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2026-03-01","month":"2026-03","description":"Clubewprepago (parcela 4/12)","amount":28.12,"source":"nubank"},{"date":"2026-03-24","month":"2026-03","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-04-01","month":"2026-04","description":"Clubewprepago (parcela 5/12)","amount":28.12,"source":"nubank"},{"date":"2026-04-16","month":"2026-04","description":"Preply","amount":132.8,"source":"bradesco"},{"date":"2026-04-24","month":"2026-04","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-04-27","month":"2026-04","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2026-04-27","month":"2026-04","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2026-05-01","month":"2026-05","description":"Clubewprepago (parcela 6/12)","amount":28.12,"source":"nubank"},{"date":"2026-05-15","month":"2026-05","description":"Preply","amount":220.19,"source":"nubank"},{"date":"2026-05-24","month":"2026-05","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-05-26","month":"2026-05","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2026-05-26","month":"2026-05","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"},{"date":"2026-05-30","month":"2026-05","description":"Clubewprepago (parcela 1/12, 2nd contract)","amount":61.93,"source":"nubank"},{"date":"2026-06-01","month":"2026-06","description":"Clubewprepago (parcela 2/12, 2nd contract)","amount":61.87,"source":"nubank"},{"date":"2026-06-01","month":"2026-06","description":"Clubewprepago (parcela 7/12)","amount":28.12,"source":"nubank"},{"date":"2026-06-11","month":"2026-06","description":"Preply","amount":223.77,"source":"nubank"},{"date":"2026-06-22","month":"2026-06","description":"LIVELO S.A. (parcela 1/5)","amount":336.96,"source":"bradesco"},{"date":"2026-06-24","month":"2026-06","description":"Claro Flex","amount":39.99,"source":"nubank"},{"date":"2026-06-26","month":"2026-06","description":"AZUL SEGUROS","amount":175.15,"source":"bradesco"},{"date":"2026-06-26","month":"2026-06","description":"LIVELO S.A.*Clube","amount":24.9,"source":"bradesco"}],"Compras Online":[{"date":"2025-10-30","month":"2025-10","description":"AMAZONMKTPLC*DRAGONFIT","amount":58.86,"source":"bradesco"},{"date":"2025-11-02","month":"2025-11","description":"AMAZON BR","amount":87.68,"source":"bradesco"},{"date":"2025-11-04","month":"2025-11","description":"Shopee*SHOPEE*ORGANIZALUX","amount":145.22,"source":"bradesco"},{"date":"2025-11-08","month":"2025-11","description":"SHOPEE *LCCOMERCIOS","amount":68.25,"source":"bradesco"},{"date":"2025-11-08","month":"2025-11","description":"AMAZON BR","amount":12.9,"source":"bradesco"},{"date":"2025-11-23","month":"2025-11","description":"SHOPEE *PetPrimeBr","amount":65.98,"source":"bradesco"},{"date":"2025-11-24","month":"2025-11","description":"AMAZON BR","amount":53.98,"source":"bradesco"},{"date":"2026-01-05","month":"2026-01","description":"HAVAN JARAGUA SHOPPING","amount":19.99,"source":"bradesco"},{"date":"2026-01-05","month":"2026-01","description":"LOJAS AMERICANAS 228","amount":39.97,"source":"bradesco"},{"date":"2026-01-12","month":"2026-01","description":"SHOPEE*SHPSTECNOLOGIA","amount":79.9,"source":"bradesco"},{"date":"2026-01-13","month":"2026-01","description":"SHOPEE*LorCaf","amount":21.0,"source":"bradesco"},{"date":"2026-01-14","month":"2026-01","description":"AMAZON BR","amount":52.9,"source":"bradesco"},{"date":"2026-01-14","month":"2026-01","description":"AMAZON BR","amount":52.9,"source":"bradesco"},{"date":"2026-01-20","month":"2026-01","description":"SHOPEE*ShopBomECheap","amount":31.99,"source":"bradesco"},{"date":"2026-01-21","month":"2026-01","description":"Mp *Aliexpress","amount":47.1,"source":"nubank"},{"date":"2026-02-05","month":"2026-02","description":"MP*ALIEXPRESS","amount":98.16,"source":"bradesco"},{"date":"2026-02-10","month":"2026-02","description":"Shopee*SHOPEE*LorCaf","amount":36.72,"source":"bradesco"},{"date":"2026-02-18","month":"2026-02","description":"AMAZONMKTPLC*GLOBALEST","amount":110.49,"source":"bradesco"},{"date":"2026-02-18","month":"2026-02","description":"AMAZON MARKETPLACE","amount":129.27,"source":"bradesco"},{"date":"2026-03-28","month":"2026-03","description":"LOJAS AMERICANAS 228","amount":9.99,"source":"bradesco"},{"date":"2026-04-01","month":"2026-04","description":"AMAZONMKTPLC*BIGMIXMAG","amount":29.99,"source":"bradesco"},{"date":"2026-04-04","month":"2026-04","description":"RIACHUELO 271","amount":39.99,"source":"bradesco"},{"date":"2026-04-04","month":"2026-04","description":"AMAZON BR","amount":39.86,"source":"bradesco"},{"date":"2026-04-12","month":"2026-04","description":"Lojas Renner Fl","amount":99.9,"source":"nubank"},{"date":"2026-05-13","month":"2026-05","description":"AMAZON BR","amount":78.48,"source":"bradesco"},{"date":"2026-05-20","month":"2026-05","description":"MP*ALIEXPRESS","amount":1003.18,"source":"bradesco"},{"date":"2026-06-02","month":"2026-06","description":"SHOPEE*LuxBeauty","amount":29.99,"source":"bradesco"},{"date":"2026-06-12","month":"2026-06","description":"DL*AliExpress BR","amount":41.26,"source":"bradesco"},{"date":"2026-06-18","month":"2026-06","description":"AMAZON BR","amount":68.38,"source":"bradesco"},{"date":"2026-06-19","month":"2026-06","description":"SHOPEE*SHPSTECNOLOGIA (parcela 1/3)","amount":74.25,"source":"bradesco"}],"Saude/Farmacia":[{"date":"2025-12-10","month":"2025-12","description":"UTILFARMA FARMACIA E DROG","amount":29.9,"source":"bradesco"},{"date":"2026-01-24","month":"2026-01","description":"CIA DA SAUDE","amount":41.89,"source":"bradesco"},{"date":"2026-02-23","month":"2026-02","description":"UTILFARMA FARMACIA E DROG","amount":9.9,"source":"bradesco"},{"date":"2026-03-13","month":"2026-03","description":"Drogaria Catarinense","amount":36.8,"source":"nubank"},{"date":"2026-04-10","month":"2026-04","description":"CIA DA SAUDE","amount":3.12,"source":"bradesco"}],"Outros":[{"date":"2025-11-01","month":"2025-11","description":"Mecanica Gasparetto (parcela 4/4)","amount":157.5,"source":"nubank"},{"date":"2025-11-08","month":"2025-11","description":"Ticketmais","amount":104.0,"source":"bradesco"},{"date":"2025-11-14","month":"2025-11","description":"PESCA ESPORTIVA JOINVILLE","amount":80.0,"source":"bradesco"},{"date":"2025-11-15","month":"2025-11","description":"WillianGoncalves","amount":40.0,"source":"bradesco"},{"date":"2025-11-17","month":"2025-11","description":"PET LOVE*Order 10","amount":125.66,"source":"bradesco"},{"date":"2025-11-21","month":"2025-11","description":"PESCA ESPORTIVA JOINVILLE","amount":100.0,"source":"bradesco"},{"date":"2025-11-26","month":"2025-11","description":"MECANICA GASPARET (parcela 2/3)","amount":332.33,"source":"bradesco"},{"date":"2025-11-26","month":"2025-11","description":"Jesmond Comercio Varejista","amount":102.4,"source":"nubank"},{"date":"2025-11-27","month":"2025-11","description":"ARWEG TAP","amount":58.0,"source":"bradesco"},{"date":"2025-11-28","month":"2025-11","description":"CESCA E CIA","amount":100.0,"source":"bradesco"},{"date":"2025-11-28","month":"2025-11","description":"Degas Sistemas","amount":50.0,"source":"nubank"},{"date":"2025-11-30","month":"2025-11","description":"IECLB CAPINZAL","amount":54.0,"source":"bradesco"},{"date":"2025-12-13","month":"2025-12","description":"BOLICHE JARAGUA LTDA","amount":8.0,"source":"bradesco"},{"date":"2025-12-16","month":"2025-12","description":"REDWOLFSCH","amount":139.8,"source":"bradesco"},{"date":"2025-12-17","month":"2025-12","description":"Ticketmais","amount":46.99,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"MECANICA GASPARET (parcela 3/3)","amount":332.33,"source":"bradesco"},{"date":"2025-12-26","month":"2025-12","description":"NAT*Natura Pagamento (parcela 1/2)","amount":54.31,"source":"bradesco"},{"date":"2025-12-27","month":"2025-12","description":"ROCKEFELLER POINT SUP","amount":56.24,"source":"bradesco"},{"date":"2025-12-27","month":"2025-12","description":"XV DE NOVEMBRO","amount":39.51,"source":"bradesco"},{"date":"2026-01-02","month":"2026-01","description":"RENATACARDOSO","amount":71.9,"source":"bradesco"},{"date":"2026-01-04","month":"2026-01","description":"RTO REGISTRO","amount":56.9,"source":"bradesco"},{"date":"2026-01-06","month":"2026-01","description":"APOLO FILIAL 11","amount":100.0,"source":"bradesco"},{"date":"2026-01-09","month":"2026-01","description":"WillianGoncalves","amount":80.0,"source":"bradesco"},{"date":"2026-01-10","month":"2026-01","description":"Cappta *Seu Manuel Pes","amount":116.24,"source":"nubank"},{"date":"2026-01-21","month":"2026-01","description":"BR1*MK (parcela 1/2)","amount":89.33,"source":"bradesco"},{"date":"2026-01-23","month":"2026-01","description":"ARWEG TAP","amount":24.33,"source":"bradesco"},{"date":"2026-01-28","month":"2026-01","description":"NAT*Natura Pagamento (parcela 2/2)","amount":54.31,"source":"bradesco"},{"date":"2026-01-30","month":"2026-01","description":"GuilhermeKrause","amount":126.5,"source":"bradesco"},{"date":"2026-02-04","month":"2026-02","description":"PG*TICKETWORK","amount":1093.92,"source":"bradesco"},{"date":"2026-02-06","month":"2026-02","description":"DEGAS SISTEMAS","amount":30.0,"source":"bradesco"},{"date":"2026-02-25","month":"2026-02","description":"BR1*MK (parcela 2/2)","amount":89.32,"source":"bradesco"},{"date":"2026-02-26","month":"2026-02","description":"Mp *Piolhobarberl","amount":50.0,"source":"nubank"},{"date":"2026-03-28","month":"2026-03","description":"SUPERLEGAL COMERCIO (parcela 1/2)","amount":50.0,"source":"bradesco"},{"date":"2026-04-05","month":"2026-04","description":"Lj Astral Jaragua","amount":31.98,"source":"nubank"},{"date":"2026-04-05","month":"2026-04","description":"Milium Loja","amount":45.8,"source":"nubank"},{"date":"2026-04-15","month":"2026-04","description":"MP*PIOLHOBARBERL","amount":50.0,"source":"bradesco"},{"date":"2026-04-27","month":"2026-04","description":"PET LOVE*Order 10 (parcela 2/3)","amount":129.88,"source":"bradesco"},{"date":"2026-04-27","month":"2026-04","description":"PALADIO INDUSTRIA E COMERCIO (parcela 1/8)","amount":219.0,"source":"bradesco"},{"date":"2026-05-09","month":"2026-05","description":"Olga Duarte","amount":6.0,"source":"nubank"},{"date":"2026-05-16","month":"2026-05","description":"M7 Mais","amount":66.3,"source":"nubank"},{"date":"2026-05-21","month":"2026-05","description":"CORONEL PROCOPIO","amount":47.0,"source":"bradesco"},{"date":"2026-05-23","month":"2026-05","description":"CLUBE ATLETICO BAEPEND","amount":15.0,"source":"bradesco"},{"date":"2026-05-24","month":"2026-05","description":"CLUBE ATLETICO BAEPEND","amount":7.0,"source":"bradesco"},{"date":"2026-05-26","month":"2026-05","description":"PET LOVE*Order 10 (parcela 3/3)","amount":129.88,"source":"bradesco"},{"date":"2026-05-26","month":"2026-05","description":"SUPERLEGAL COMERCIO (parcela 2/2)","amount":49.99,"source":"bradesco"},{"date":"2026-05-26","month":"2026-05","description":"PALADIO INDUSTRIA E COMERCIO (parcela 2/8)","amount":219.0,"source":"bradesco"},{"date":"2026-05-27","month":"2026-05","description":"PAYGO","amount":120.0,"source":"bradesco"},{"date":"2026-06-05","month":"2026-06","description":"CAPPTA*SANTPAR SC COM","amount":49.2,"source":"bradesco"},{"date":"2026-06-26","month":"2026-06","description":"PALADIO INDUSTRIA E COMERCIO (parcela 3/8)","amount":219.0,"source":"bradesco"}],"Moradia/Financiamento":[{"date":"2025-10-01","month":"2025-10","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2025-11-01","month":"2025-11","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2025-12-01","month":"2025-12","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-01-01","month":"2026-01","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-02-01","month":"2026-02","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-03-01","month":"2026-03","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-04-01","month":"2026-04","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-05-01","month":"2026-05","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"},{"date":"2026-06-01","month":"2026-06","description":"Financiamento imobiliario (fixo mensal)","amount":1600.0,"source":"fixo"}]}};
+
+const MONTH_LABELS = {
+  "2025-10":"out/25 (parcial)","2025-11":"nov/25","2025-12":"dez/25","2026-01":"jan/26","2026-02":"fev/26",
+  "2026-03":"mar/26*","2026-04":"abr/26","2026-05":"mai/26","2026-06":"jun/26"
+};
+const CAT_COLORS = {
+  "Mercado/Supermercado":"var(--series-1)","Transporte":"var(--series-2)","Alimentacao/Restaurantes":"var(--series-3)",
+  "Assinaturas":"var(--series-4)","Compras Online":"var(--series-5)","Saude/Farmacia":"var(--series-6)","Outros":"var(--series-7)",
+  "Moradia/Financiamento":"var(--series-8)"
+};
+const CAT_LABELS_PT = {
+  "Mercado/Supermercado":"Mercado/Supermercado","Transporte":"Transporte","Alimentacao/Restaurantes":"Alimentacao/Restaurantes",
+  "Assinaturas":"Assinaturas","Compras Online":"Compras online","Saude/Farmacia":"Saude/Farmacia","Outros":"Outros",
+  "Moradia/Financiamento":"Moradia/Financiamento"
+};
+const SOURCE_LABELS_PT = { "nubank":"Nubank", "bradesco":"Bradesco", "fixo":"Fixo (fora do cartao)" };
+
+function fmtBRL(v) {
+  return "R$ " + v.toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtBRLShort(v) {
+  return "R$ " + Math.round(v).toLocaleString("pt-BR");
+}
+
+const tooltip = document.getElementById("tooltip");
+function showTip(evt, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.opacity = 1;
+  tooltip.style.left = (evt.clientX + 14) + "px";
+  tooltip.style.top = (evt.clientY + 14) + "px";
+}
+function hideTip() { tooltip.style.opacity = 0; }
+
+// ---------- Stat tiles ----------
+(function buildStats() {
+  const months = DATA.months;
+  const fullMonths = months.filter(m => m !== "2025-10"); // exclude partial month from averages
+  const avgVidaReal = fullMonths.reduce((s,m) => s + DATA.monthly[m].vida_real_total, 0) / fullMonths.length;
+  const avgRemaining = DATA.budget - avgVidaReal;
+  const totalRemaining = fullMonths.reduce((s,m) => s + DATA.monthly[m].remaining, 0);
+  const tiles = [
+    {label:"Orcamento mensal", value: fmtBRL(DATA.budget), sub:"salario liquido disponivel"},
+    {label:"Gasto medio Vida Real/mes", value: fmtBRL(avgVidaReal), sub:`media de ${fullMonths.length} meses completos`},
+    {label:"Sobra media/mes", value: fmtBRL(avgRemaining), sub: avgRemaining >= 0 ? "dentro do orcamento" : "acima do orcamento"},
+    {label:"Total Vida Real (periodo)", value: fmtBRL(DATA.total_vida_real), sub:`${DATA.months.length} meses (1 parcial)`},
+    {label:"Total Viagem (periodo)", value: fmtBRL(DATA.total_viagem), sub:"excluido do orcamento de rotina", viagem:true},
+  ];
+  const row = document.getElementById("statRow");
+  tiles.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "stat-tile";
+    div.innerHTML = `<div class="label">${t.label}</div><div class="value${t.viagem?' viagem':''}">${t.value}</div><div class="sub">${t.sub}</div>`;
+    row.appendChild(div);
+  });
+  document.getElementById("viagemTotal").textContent = fmtBRL(DATA.total_viagem);
+  document.getElementById("txnCount").textContent = DATA.n_transactions;
+})();
+
+// ---------- Chart 1: Budget vs Vida Real spend ----------
+(function buildBudgetChart() {
+  const months = DATA.months;
+  const W = 1000, H = 340, padL = 50, padR = 20, padT = 20, padB = 56;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const maxVal = Math.max(DATA.budget, ...months.map(m => DATA.monthly[m].vida_real_total)) * 1.08;
+  const n = months.length;
+  const slotW = plotW / n;
+  const barW = Math.min(28, slotW * 0.5);
+
+  function y(v) { return padT + plotH - (v / maxVal) * plotH; }
+
+  let gridSVG = "";
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (maxVal / ticks) * i;
+    const yy = y(v);
+    gridSVG += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}"/>`;
+    gridSVG += `<text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmtBRLShort(v)}</text>`;
+  }
+
+  const budgetY = y(DATA.budget);
+  let barsSVG = "";
+  months.forEach((m, i) => {
+    const d = DATA.monthly[m];
+    const cx = padL + slotW * i + slotW/2;
+    const barX = cx - barW/2;
+    const barTop = y(d.vida_real_total);
+    const barH = Math.max(0, y(0) - barTop);
+    const over = d.vida_real_total > DATA.budget;
+    const deltaClass = d.remaining >= 0 ? "delta-good" : "delta-bad";
+    const deltaText = d.remaining >= 0 ? `+${fmtBRLShort(d.remaining)}` : `-${fmtBRLShort(Math.abs(d.remaining))}`;
+    barsSVG += `<g class="bar" data-month="${m}"
+        onmousemove="showTip(event, '<b>${MONTH_LABELS[m]}</b><br>Vida real: ${fmtBRL(d.vida_real_total)}<br>Orcamento: ${fmtBRL(DATA.budget)}<br>Sobra: ${fmtBRL(d.remaining)}<br>${d.n_vida_real} transacoes')"
+        onmouseleave="hideTip()">
+      <rect x="${barX}" y="${barTop}" width="${barW}" height="${barH}" rx="4" fill="${over ? 'var(--critical)' : 'var(--series-1)'}"/>
+      <text class="month-label" x="${cx}" y="${H-padB+18}" text-anchor="middle">${MONTH_LABELS[m]}</text>
+      <text class="${deltaClass}" x="${cx}" y="${H-padB+34}" text-anchor="middle">${deltaText}</text>
+    </g>`;
+  });
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Orcamento versus gasto vida real por mes">
+    ${gridSVG}
+    <line class="budget-line" stroke-dasharray="4 3" x1="${padL}" x2="${W-padR}" y1="${budgetY}" y2="${budgetY}"/>
+    <text class="budget-label" x="${W-padR}" y="${budgetY-6}" text-anchor="end">Orcamento: ${fmtBRLShort(DATA.budget)}/mes</text>
+    <line class="baseline" x1="${padL}" x2="${W-padR}" y1="${y(0)}" y2="${y(0)}"/>
+    ${barsSVG}
+  </svg>`;
+  document.getElementById("chartBudget").innerHTML = svg;
+
+  // table
+  let rows = months.map(m => {
+    const d = DATA.monthly[m];
+    return `<tr><td>${MONTH_LABELS[m]}</td><td>${fmtBRL(DATA.budget)}</td><td>${fmtBRL(d.vida_real_total)}</td><td>${fmtBRL(d.remaining)}</td><td>${d.n_vida_real}</td></tr>`;
+  }).join("");
+  document.getElementById("tableBudget").innerHTML = `<table class="data-table">
+    <thead><tr><th>Mes</th><th>Orcamento</th><th>Gasto vida real</th><th>Sobra</th><th>Transacoes</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+})();
+
+// ---------- Chart 2: Category stacked bar ----------
+(function buildCategoryChart() {
+  const months = DATA.months;
+  const cats = DATA.categories;
+  const W = 1000, H = 360, padL = 50, padR = 20, padT = 20, padB = 40;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const maxVal = Math.max(...months.map(m =>
+    cats.reduce((s,c) => s + DATA.monthly[m].categories[c], 0)
+  )) * 1.1;
+  const n = months.length;
+  const slotW = plotW / n;
+  const barW = Math.min(34, slotW * 0.6);
+  const gap = 2;
+
+  function y(v) { return padT + plotH - (v / maxVal) * plotH; }
+
+  let gridSVG = "";
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++) {
+    const v = (maxVal / ticks) * i;
+    const yy = y(v);
+    gridSVG += `<line class="gridline" x1="${padL}" x2="${W-padR}" y1="${yy}" y2="${yy}"/>`;
+    gridSVG += `<text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmtBRLShort(v)}</text>`;
+  }
+
+  let barsSVG = "";
+  months.forEach((m, i) => {
+    const d = DATA.monthly[m];
+    const cx = padL + slotW * i + slotW/2;
+    const barX = cx - barW/2;
+    let cumBottom = y(0);
+    let segs = "";
+    cats.forEach(c => {
+      const val = d.categories[c];
+      if (val <= 0) return;
+      const segTop = cumBottom - (val / maxVal) * plotH;
+      const segH = Math.max(0, cumBottom - segTop - gap);
+      segs += `<rect class="cat-seg" data-cat="${c}" data-month="${m}" x="${barX}" y="${segTop}" width="${barW}" height="${segH}" rx="2" fill="${CAT_COLORS[c]}"
+        onmousemove="showTip(event, '<b>${MONTH_LABELS[m]}</b><br>${CAT_LABELS_PT[c]}: ${fmtBRL(val)}<br><i>clique para ver os lancamentos</i>')"
+        onmouseleave="hideTip()"
+        onclick="openCategoryDetail('${c}', '${m}')"/>`;
+      cumBottom = segTop;
+    });
+    barsSVG += `<g>${segs}<text class="month-label" x="${cx}" y="${H-padB+18}" text-anchor="middle">${MONTH_LABELS[m]}</text></g>`;
+  });
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto vida real por categoria e mes">
+    ${gridSVG}
+    <line class="baseline" x1="${padL}" x2="${W-padR}" y1="${y(0)}" y2="${y(0)}"/>
+    ${barsSVG}
+  </svg>`;
+  document.getElementById("chartCategories").innerHTML = svg;
+
+  // legend
+  const legend = document.getElementById("catLegend");
+  legend.innerHTML = cats.map(c =>
+    `<span class="legend-item" data-cat="${c}" onclick="openCategoryDetail('${c}', null)"><span class="swatch" style="background:${CAT_COLORS[c]}"></span>${CAT_LABELS_PT[c]}</span>`
+  ).join("");
+
+  // table
+  let head = `<tr><th>Mes</th>${cats.map(c=>`<th>${CAT_LABELS_PT[c]}</th>`).join("")}<th>Total</th></tr>`;
+  let rows = months.map(m => {
+    const d = DATA.monthly[m];
+    const total = cats.reduce((s,c) => s + d.categories[c], 0);
+    return `<tr><td>${MONTH_LABELS[m]}</td>${cats.map(c=>`<td>${fmtBRL(d.categories[c])}</td>`).join("")}<td><b>${fmtBRL(total)}</b></td></tr>`;
+  }).join("");
+  document.getElementById("tableCategories").innerHTML = `<table class="data-table"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+})();
+
+// ---------- Category drill-down ----------
+let activeDetail = null; // {cat, month|null}
+
+function openCategoryDetail(cat, month) {
+  if (activeDetail && activeDetail.cat === cat && activeDetail.month === month) {
+    closeCategoryDetail();
+    return;
+  }
+  activeDetail = { cat, month };
+  renderCategoryDetail();
+}
+
+function closeCategoryDetail() {
+  activeDetail = null;
+  document.getElementById("categoryDetailCard").classList.remove("open");
+  document.querySelectorAll(".legend-item.active").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".cat-seg.dimmed").forEach(el => el.classList.remove("dimmed"));
+}
+
+function renderCategoryDetail() {
+  const { cat, month } = activeDetail;
+  const rows = DATA.transactions_by_category[cat].filter(t => !month || t.month === month);
+  const total = rows.reduce((s, t) => s + t.amount, 0);
+
+  document.getElementById("detailSwatch").style.background = CAT_COLORS[cat];
+  document.getElementById("detailTitle").textContent = CAT_LABELS_PT[cat] + (month ? ` - ${MONTH_LABELS[month]}` : " - todos os meses");
+  document.getElementById("detailTotal").textContent = `${fmtBRL(total)} em ${rows.length} lancamento${rows.length === 1 ? "" : "s"}`;
+
+  const head = `<thead><tr><th>Data</th><th>Descricao</th>${month ? "" : "<th>Mes</th>"}<th>Origem</th><th>Valor</th></tr></thead>`;
+  const body = rows.map(t => {
+    const [y,mo,da] = t.date.split("-");
+    return `<tr><td>${da}/${mo}/${y}</td><td style="text-align:left">${t.description}</td>${month ? "" : `<td>${MONTH_LABELS[t.month]}</td>`}<td>${SOURCE_LABELS_PT[t.source] || t.source}</td><td>${fmtBRL(t.amount)}</td></tr>`;
+  }).join("");
+  document.getElementById("detailTable").innerHTML = head + `<tbody>${body}</tbody>`;
+
+  document.getElementById("categoryDetailCard").classList.add("open");
+  document.getElementById("categoryDetailCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+  document.querySelectorAll(".legend-item").forEach(el => el.classList.toggle("active", el.dataset.cat === cat));
+  document.querySelectorAll(".cat-seg").forEach(el => {
+    const matches = el.dataset.cat === cat && (!month || el.dataset.month === month);
+    el.classList.toggle("dimmed", !matches);
+  });
+}
+
+// ---------- Notes ----------
+(function buildNotes() {
+  const notes = [
+    "<b>Moradia/Financiamento (R$ 1.600/mes):</b> gasto fixo adicionado manualmente a todos os 9 meses do painel (inclusive out/2025 parcial) - e o pagamento do financiamento da casa, que nao passa pelo cartao de credito e por isso nao aparece em transactions.json. Entra como categoria dentro de Vida Real e conta no calculo de sobra vs. orcamento.",
+    "<b>Marco/2026 (Bradesco) ausente:</b> o PDF da fatura com vencimento ~08/04/2026 esta corrompido (3 bytes) e nao pode ser lido. Gastos Bradesco de marco/2026 nao estao neste painel (Nubank de marco esta completo). Ver README para detalhes do impacto estimado.",
+    `<b>Preply (aulas de ingles, ~R$130-225/mes, cobrada em EUR/USD de Berlim):</b> reclassificado para Vida Real / Assinaturas a pedido do usuario - e uma assinatura de estudos, nao uma despesa da viagem, mesmo sendo cobrada em moeda estrangeira.`,
+    `<b>Wl*Steam Purchase</b> (jogo digital, cobrado em moeda estrangeira): ${DATA.edge_case_count} lancamento somando ${fmtBRL(DATA.edge_case_total)} permanece marcado como Viagem seguindo a regra literal (EUR/USD = viagem) - ver README e considere mover para "Vida Real" se preferir, como foi feito com o Preply.`,
+    "<b>out/2025 e um mes parcial</b> (apenas 2 compras Amazon do cartao adicional Bradesco, cauda da fatura de novembro) - excluido das medias de \"gasto medio/mes\" no topo do painel.",
+    "<b>Reconciliacao:</b> a soma dos lancamentos individuais bate exatamente com o total \"Compras/Debitos\" de 5 das 7 faturas Bradesco legiveis. Duas faturas (abr/2026 e jun/2026) tem uma pequena diferenca (R$10,50 e R$78,90) explicada por creditos aplicados diretamente no saldo sem uma linha de estorno correspondente no extrato - ver README."
+  ];
+  document.getElementById("notesList").innerHTML = notes.map(n => `<li>${n}</li>`).join("");
+})();
+</script>
+</body>
+</html>

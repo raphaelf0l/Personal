@@ -140,6 +140,57 @@ Se você tem duas frases completas (cada uma com sujeito + verbo), **vírgula so
 
 ---
 
+## 8. Want / Need / Ask + "to" (o oposto de suggest/recommend)
+
+Diferente de "suggest"/"recommend", os verbos **want, need, ask (pedir)** exigem **"to + verbo"** antes do complemento.
+
+### 8.1 Escolha a forma correta
+
+1. I want you (check / to check) the routing before closing the PO.
+2. He needs (finish / to finish) the report today.
+3. She asked me (review / to review) the parameters.
+4. They want (validate / to validate) the process before mass production.
+
+### 8.2 Corrija a frase
+
+1. "You also want ask the SMD team how many pcs they need."
+2. "I need you check this today."
+3. "He asked me review the file."
+
+---
+
+## 9. Substantivos incontáveis (não levam "s" no plural)
+
+Palavras como **information, advice, equipment, furniture** são incontáveis em inglês, mesmo sendo contáveis/plurais em português.
+
+### 9.1 Escolha a forma correta
+
+1. Please check some (information / informations) before we proceed.
+2. I need more (equipment / equipments) to run this test.
+3. Can you give me some (advice / advices) on this?
+4. We bought new (furniture / furnitures) for the office.
+
+### 9.2 Corrija a frase
+
+1. "I suggest you check before some informations."
+2. "We don't have enough equipments for this test."
+3. "He gave me good advices about the routing."
+
+---
+
+## 10. Inversão em perguntas (auxiliar antes do sujeito)
+
+Em pergunta direta escrita, o inglês inverte **auxiliar + sujeito** (does/is/are/have + sujeito). Frase declarativa com "?" no final soa estranho pra um nativo.
+
+### 10.1 Corrija a pergunta
+
+1. "This issue happens with every PO?"
+2. "Just one model is enough?"
+3. "You already checked the parameters?"
+4. "The team is working on this?"
+
+---
+
 ## Gabarito
 
 ### 1.1
@@ -228,3 +279,31 @@ Se você tem duas frases completas (cada uma com sujeito + verbo), **vírgula so
 2. "I checked the parameters, and they are all correct."
 3. "He sent the PO yesterday, but the supplier hasn't confirmed it yet."
 4. "We found the root cause, so now we need to apply the fix."
+
+### 8.1
+1. to check
+2. to finish
+3. to review
+4. to validate
+
+### 8.2
+1. "You also want to ask the SMD team how many pcs they need."
+2. "I need you to check this today."
+3. "He asked me to review the file."
+
+### 9.1
+1. information
+2. equipment
+3. advice
+4. furniture
+
+### 9.2
+1. "I suggest you check some information before."
+2. "We don't have enough equipment for this test."
+3. "He gave me good advice about the routing."
+
+### 10.1
+1. "Does this issue happen with every PO?"
+2. "Is just one model enough?"
+3. "Did you already check the parameters?"
+4. "Is the team working on this?"

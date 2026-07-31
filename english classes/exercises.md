@@ -191,6 +191,55 @@ Em pergunta direta escrita, o inglês inverte **auxiliar + sujeito** (does/is/ar
 
 ---
 
+## 11. Implant vs. Implement (falso cognato)
+
+"Implant" em inglês é literal (implante cirúrgico/inserir fisicamente). Pra "implementar um processo", use **"implement"**.
+
+### 11.1 Escolha a forma correta
+
+1. This process was already (implanted / implemented) in the other plant.
+2. We need to (implant / implement) the new routing before mass production.
+3. The doctor will (implant / implement) the device tomorrow.
+4. Have you (implanted / implemented) the changes yet?
+
+### 11.2 Corrija a frase
+
+1. "This board was already implanted with the same technical process."
+2. "We are going to implant this new routing next week."
+
+---
+
+## 12. Pronome plural (it vs. them)
+
+Se o antecedente é plural ("boards", "materials", "PCBs"...), o pronome também precisa ser plural: **"them"**, não "it".
+
+### 12.1 Escolha a forma correta
+
+1. I checked the boards and copied (it / them) to create the routing.
+2. These materials were wrong, so we corrected (it / them).
+3. He found similar PCBs and used (it / them) as a model.
+4. The parameters were incorrect; please review (it / them) again.
+
+### 12.2 Corrija a frase
+
+1. "Use them as a model" (Certo ou errado? Se estiver certo, explique por quê.)
+2. "Check the PCBs already implemented and use it by copy to create the routing."
+3. "These boards are ready, please send it to the team."
+
+---
+
+## 13. Pay attention TO (preposição fixa)
+
+"Pay attention" sempre usa **"to"**, nunca "with".
+
+### 13.1 Corrija a frase
+
+1. "Pay attention with the time for each process."
+2. "Please pay attention with the routing details."
+3. "You need to pay attention with the PO status."
+
+---
+
 ## Gabarito
 
 ### 1.1
@@ -307,3 +356,29 @@ Em pergunta direta escrita, o inglês inverte **auxiliar + sujeito** (does/is/ar
 2. "Is just one model enough?"
 3. "Did you already check the parameters?"
 4. "Is the team working on this?"
+
+### 11.1
+1. implemented
+2. implement
+3. implant
+4. implemented
+
+### 11.2
+1. "This board was already implemented with the same technical process."
+2. "We are going to implement this new routing next week."
+
+### 12.1
+1. them
+2. them
+3. them
+4. them
+
+### 12.2
+1. Certo — "them" está correto porque o antecedente ("boards", implícito no contexto) é plural.
+2. "Check the PCBs already implemented and use them by copying to create the routing." (ou "...and copy them to create the routing.")
+3. "These boards are ready, please send them to the team."
+
+### 13.1
+1. "Pay attention to the time for each process."
+2. "Please pay attention to the routing details."
+3. "You need to pay attention to the PO status."

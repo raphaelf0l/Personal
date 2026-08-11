@@ -26,6 +26,18 @@ Gabarito no final do arquivo. Tente responder antes de olhar.
 4. "I have finish the task."
 5. "Have you did this configuration before?"
 
+### 1.3 "Since + evento específico" → resultado no Present Perfect
+
+Regra: **since + [evento específico no passado simples], [consequência/resultado no Present Perfect]**. A oração com "since" descreve o ponto de partida (passado simples); a frase principal descreve o que continua válido até agora (Present Perfect). Erro comum: usar passado simples nas duas partes, ou esquecer o "has/have" na parte principal.
+
+Complete com a forma correta (present perfect ou simple past):
+
+1. Since he ______ (join) the team, he ______ (learn) a lot about SAP.
+2. Since we ______ (change) the supplier, the quality ______ (improve) a lot.
+3. Since she ______ (move) to São Paulo, she ______ (meet) many new people.
+4. Since the company ______ (implement) the new process, costs ______ (drop) significantly.
+5. Since I ______ (start) this job, I ______ (never / face) an issue this big.
+
 ---
 
 ## 2. Concordância sujeito-verbo (foco em "you" e sujeitos plurais)
@@ -240,6 +252,19 @@ Se o antecedente é plural ("boards", "materials", "PCBs"...), o pronome também
 
 ---
 
+## 14. Ever vs. Never
+
+"Ever" = "em algum momento" (usado em perguntas e com negativos como "no one", "nobody", ou dentro do próprio "have/has"). "Never" já é negativo sozinho — não junte os dois (dupla negação).
+
+### 14.1 Escolha a forma correta
+
+1. No one in the team has (ever / never) seen this error before.
+2. Have you (ever / never) worked with SAP?
+3. I have (ever / never) faced this issue — it's the first time.
+4. Nobody has (ever / never) asked me that question.
+
+---
+
 ## Gabarito
 
 ### 1.1
@@ -257,6 +282,13 @@ Se o antecedente é plural ("boards", "materials", "PCBs"...), o pronome também
 3. "She has gone to the meeting already."
 4. "I have finished the task."
 5. "Have you done this configuration before?"
+
+### 1.3
+1. joined / has learned
+2. changed / has improved
+3. moved / has met
+4. implemented / have dropped
+5. started / have never faced
 
 ### 2.1
 1. are
@@ -382,3 +414,9 @@ Se o antecedente é plural ("boards", "materials", "PCBs"...), o pronome também
 1. "Pay attention to the time for each process."
 2. "Please pay attention to the routing details."
 3. "You need to pay attention to the PO status."
+
+### 14.1
+1. ever
+2. ever
+3. never
+4. ever

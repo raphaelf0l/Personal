@@ -1,6 +1,6 @@
 # Notas de Progresso - Inglês
 
-_Última atualização: 2026-07-03_
+_Última atualização: 2026-08-11_
 
 ## Nível avaliado
 **B1 - B2 (Intermediário / Intermediário-Avançado)**
@@ -38,12 +38,22 @@ Boa fluência e compreensão auditiva, sustenta conversas longas sobre temas com
    - ambient (PT: "ambiente") → em inglês, "ambient" é adjetivo (ambient light/noise); "ambiente de trabalho/teste" = **environment**
    - humming (cantarolar) ≠ hammer (martelo)
    - upset = chateado/triste, mas também "derrubar/bagunçar" quando aplicado a objetos
+   - **implant vs. implement** (novo, 2026-08): "implant" é literal (implante cirúrgico); "implementar um processo" = **implement**. Ele mesmo usou os dois de forma inconsistente na mesma mensagem.
+
+5. **"Since" + evento específico → resultado no Present Perfect** (achado novo, 2026-08 — via exercício "An Experience Studying Abroad")
+   - Regra: "since + [evento específico no **passado simples**], [consequência/resultado no **Present Perfect**]". Ex: "Since he **came** to Oxford, he **has met** many people."
+   - No exercício, ele acertou a oração com "since" (passado simples: "came"), mas errou consistentemente a frase principal 4 vezes seguidas, usando passado simples ("met", "discovered", "heard", "learned") em vez de Present Perfect ("has met", "has discovered"...).
+   - **Isso mostra que o problema não é só mecânico (esquecer o have/has)** — é também não reconhecer os gatilhos que pedem Present Perfect: "since", "for + duração", "ever", "already", "yet". Vale tratar isso como sub-prioridade dentro do ponto #1.
+
+6. **Suggest vs. suggestion / want-need-ask + "to" / substantivos incontáveis / pay attention to / inversão em perguntas / ever vs. never / pronome plural (it vs. them)**
+   - Todos documentados com exercícios práticos no `exercises.md` (blocos 5, 8, 9, 10, 12, 13, 14). Não repetidos aqui em detalhe para não duplicar conteúdo — ver arquivo de exercícios para a lista completa e atualizada.
 
 ## Prioridade sugerida de estudo
-1. Present Perfect (have/has + particípio) - o que mais aparece e mais denuncia erro pra quem lê/ouve.
-2. Concordância sujeito-verbo.
-3. Verbos irregulares menos comuns (flashcards).
-4. Vocabulário / falsos cognatos - tende a se resolver com exposição.
+1. Present Perfect (have/has + particípio, **e reconhecer os gatilhos**: since, for, ever, already, yet) - ainda o que mais aparece e mais denuncia erro.
+2. Concordância sujeito-verbo (incluindo have/has).
+3. Preposições fixas (in/on/at, pay attention to) e "suggest" vs "want/need/ask" (regras opostas de uso de "to").
+4. Verbos irregulares menos comuns (flashcards).
+5. Vocabulário / falsos cognatos - tende a se resolver com exposição.
 
 ## Temas cobertos nas aulas (pastas de áudio)
 - recap
@@ -66,5 +76,8 @@ Boa fluência e compreensão auditiva, sustenta conversas longas sobre temas com
 
 **Aula 03 — agendada para 07/07/2026** — tema ainda não definido no Notion.
 
+## Exercícios práticos
+Ver `exercises.md` na mesma pasta — 14 blocos de exercícios com gabarito, um por padrão de erro identificado (Present Perfect, concordância, verbos irregulares, falsos cognatos, suggest/suggestion, want/need/ask+to, substantivos incontáveis, future time clauses, comma splices, inversão em perguntas, implant/implement, pronome plural, pay attention to, ever/never). Atualizado continuamente conforme novas frases reais e exercícios de aula são revisados.
+
 ## Fonte
-Overview elaborado com base nos áudios das aulas (professor Miko), fornecido em 2026-07-03, e cruzado com os resumos oficiais de aula mantidos no Notion (página "Inglês", em Estudos).
+Overview elaborado com base nos áudios das aulas (professor Miko), fornecido em 2026-07-03, e cruzado com os resumos oficiais de aula mantidos no Notion (página "Inglês", em Estudos). Atualizado continuamente com erros identificados em mensagens reais de trabalho e exercícios de aula (ex: worksheet "An Experience Studying Abroad", 2026-08).

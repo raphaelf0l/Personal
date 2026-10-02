@@ -82,6 +82,18 @@ Complete com a forma correta (present perfect ou simple past):
 5. The wheel ______ (spin) out of control.
 6. She ______ (weep) when she heard the news.
 
+### 3.3 Verbos que NÃO mudam no passado simples (mesma forma presente/passado)
+
+Grupo especial de irregulares: cut, put, hit, set, cost, hurt, let, shut, spread, cast, burst, split, bet. Não levam "-ed" (ex: "cutted" não existe). Atenção especial ao "read": a escrita não muda, mas a **pronúncia** muda (presente /riːd/, passado /rɛd/).
+
+Complete com a forma correta (presente ou passado, conforme o contexto):
+
+1. Yesterday, he ______ (cut) the cable by mistake.
+2. We usually ______ (set) the parameters before starting the test.
+3. Last week, this machine ______ (cost) more to repair than we expected.
+4. I ______ (read) that report yesterday — it ______ (hurt) to see so many errors.
+5. They ______ (put) the new routing in the system last Monday.
+
 ---
 
 ## 4. Falsos cognatos / vocabulário
@@ -321,6 +333,13 @@ Se o antecedente é plural ("boards", "materials", "PCBs"...), o pronome também
 4. stung
 5. spun
 6. wept
+
+### 3.3
+1. cut
+2. set
+3. cost
+4. read (/rɛd/) ... hurt
+5. put
 
 ### 4.1
 1. environment
